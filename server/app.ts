@@ -13,10 +13,10 @@ import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
         fps: 25,
         ffmpeg_Path: "/usr/bin/ffmpeg",
         videoFrame: {
-            width: 1024,
-            height: 768,
+            width: 1920,
+            height: 1080,
         },
-        aspectRatio: '4:3',
+        aspectRatio: '16:9',
     };
     let processId
     const browser = await puppeteer.launch(browserConfig).then((browser) => {

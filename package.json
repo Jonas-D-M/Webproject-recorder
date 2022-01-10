@@ -4,20 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node dist/app.js",
-    "dev": "npx nodemon --watch 'server/**/*' --exec 'ts-node' server/app.ts"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jonas-D-M/Research-Project.git"
+  },
+  "author": "Jonas De Meyer",
   "license": "ISC",
-  "devDependencies": {
-    "eslint": "^8.0.1",
-    "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+  "bugs": {
+    "url": "https://github.com/Jonas-D-M/Research-Project/issues"
   },
-  "dependencies": {
-    "puppeteer": "^10.4.0",
-    "puppeteer-screen-recorder": "^2.0.2",
-    "selenium-webdriver": "^4.1.0"
-  }
+  "homepage": "https://github.com/Jonas-D-M/Research-Project#readme"
 }

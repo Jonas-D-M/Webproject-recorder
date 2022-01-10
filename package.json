@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Jonas-D-M/Research-Project#readme",
   "dependencies": {
+    "@actions/glob": "^0.2.0",
     "@vercel/ncc": "^0.33.1"
   }
 }

@@ -2,7 +2,8 @@ name: main
 on:
   push:
     branches:
-      - feature/convert-to-javscript-action
+      - feature/convert-to-javascript-action
+
 
 jobs:
   test:

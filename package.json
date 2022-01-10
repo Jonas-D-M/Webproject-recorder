@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "puppeteer": "^10.4.0",
-    "puppeteer-screen-recorder": "^2.0.2"
+    "puppeteer-screen-recorder": "^2.0.2",
+    "selenium-webdriver": "^4.1.0"
   }
 }

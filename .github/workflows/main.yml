@@ -4,15 +4,13 @@ jobs:
   checkout_repo:
     runs-on: ubuntu-latest
     name: A job to checkout repo into dockerfile
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: npm ci, build and test
-        uses: Jonas-D-M/Research-Project@v1
-        run: |
-          npm ci
-          npm run build --if presenst
+      - name: Checkout
+          uses: actions/checkout@v2
+      - name: npm ci, build and test
+          uses: Jonas-D-M/Research-Project@v1
+          run: |
+            npm ci
+            npm run build --if presenst
 
   hello_world_job:
     runs-on: ubuntu-latest

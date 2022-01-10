@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build src/action.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Jonas-D-M/Research-Project/issues"
   },
-  "homepage": "https://github.com/Jonas-D-M/Research-Project#readme"
+  "homepage": "https://github.com/Jonas-D-M/Research-Project#readme",
+  "dependencies": {
+    "@vercel/ncc": "^0.33.1"
+  }
 }

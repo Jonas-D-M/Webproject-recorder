@@ -9,8 +9,8 @@ export default (() => {
   const startServer = (port = 3000, dirname = '.') => {
     server = createServer(function (req, res) {
       file.serve(req, res)
+      console.log(`Server is serving on port ${port}`)
     }).listen(port)
-    console.log(`Server is serving on port ${port}`)
   }
 
   const stopServer = () => {

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc build src/action.js -o dist",
+    "build": "tsc && ncc build lib/action.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

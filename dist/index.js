@@ -38,7 +38,7 @@ const { initServer, test } = server_1.default;
                 console.log('Hello world!');
             });
         }
-        initServer();
+        // initServer()
         test();
         run();
     }

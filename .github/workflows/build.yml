@@ -19,6 +19,6 @@ jobs:
         run: |
           git config --global user.name 'Workflow-Builder'
           git config --global user.email 'your-username@users.noreply.github.com'
-          git add .
+          git add dist/index.js
           git commit -am "Generated new build"
           git push

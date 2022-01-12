@@ -11,6 +11,7 @@ export default (() => {
   const test = () => {
     console.log('this is a message from the server.ts module')
     console.log('')
+    console.log('another one')
   }
 
   return {

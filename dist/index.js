@@ -38,7 +38,7 @@ const { startServer, stopServer, test } = server_1.default;
                 console.log('Hello world!');
             });
         }
-        startServer();
+        yield startServer();
         stopServer();
         test();
         run();
@@ -63,10 +63,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const connect_1 = __importDefault(__nccwpck_require__(1056));
 const serve_static_1 = __importDefault(__nccwpck_require__(3146));
 exports["default"] = (() => {
+    let app = (0, connect_1.default)();
     const startServer = (port = 3000, dirname = '.') => {
-        (0, connect_1.default)()
-            .use((0, serve_static_1.default)(dirname))
-            .listen(port, () => console.log(`Server running on ${port}`));
+        return new Promise((resolve, reject) => {
+            try {
+                app
+                    .use((0, serve_static_1.default)(dirname))
+                    .listen(port, () => console.log(`Server running on ${port}`));
+                resolve();
+            }
+            catch (error) {
+                reject(error);
+            }
+        });
     };
     const stopServer = () => {
         console.log('Server is stopping');

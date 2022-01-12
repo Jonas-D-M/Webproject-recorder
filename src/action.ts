@@ -19,11 +19,12 @@ const { startServer, stopServer, test } = server
       console.log('Hello world!')
     }
 
-    await startServer()
-    stopServer()
+    startServer()
+
     test()
 
     run()
+    stopServer()
   } catch (error: any) {
     core.setFailed(error.message)
   }

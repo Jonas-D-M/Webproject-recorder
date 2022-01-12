@@ -1,25 +1,21 @@
-import connect from 'connect'
-import serveStatic from 'serve-static'
+import fs from 'fs'
+import { createServer, Server } from 'http'
+import { Server as StaticServer } from 'node-static'
 
 export default (() => {
-  let app: connect.Server = connect()
+  let file = new StaticServer(__dirname)
+  let server: Server
 
   const startServer = (port = 3000, dirname = '.') => {
-    // return new Promise<void>((resolve, reject) => {
-    try {
-      app
-        .use(serveStatic(dirname))
-        .listen(port, () => console.log(`Server running on ${port}`))
-      // resolve()
-    } catch (error) {
-      // reject(error)
-    }
-    // })
+    server = createServer(function (req, res) {
+      file.serve(req, res)
+    }).listen(port)
+    console.log(`Server is serving on port ${port}`)
   }
 
   const stopServer = () => {
     console.log('Server is stopping')
-    process.exit()
+    server.close()
   }
 
   const test = () => {

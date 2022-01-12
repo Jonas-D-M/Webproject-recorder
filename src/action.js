@@ -17,13 +17,19 @@ const path = require("path");
   // const json = JSON.parse(data);
   // const fileToUsePath = core.getInput("file-to-use");
 
-  fs.readFile("/github/workspace/README.md", logFile);
+  // fs.readFile("/github/workspace/README.md", logFile);
 
-  function logFile(err, data) {
-    err
-      ? Function("error", "throw error")(err)
-      : console.log(JSON.stringify(data));
-  }
+  fs.readdir(testFolder, (err, files) => {
+    files.forEach((file) => {
+      console.log(file);
+    });
+  });
+
+  // function logFile(err, data) {
+  //   err
+  //     ? Function("error", "throw error")(err)
+  //     : console.log(JSON.stringify(data));
+  // }
 
   async function run() {
     console.log("Hello world!");

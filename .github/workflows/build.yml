@@ -1,0 +1,27 @@
+name: Project build
+on:
+  push:
+    branches:
+      - feature/convert-to-javascript-action
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build the action
+        run: |
+          npm ci
+          npm run build
+      - name: Commit and push build
+        run: |
+          git config --global user.name 'Your Name'
+          git config --global user.email 'your-username@users.noreply.github.com'
+          git commit -am "Automated report"
+          git push
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./

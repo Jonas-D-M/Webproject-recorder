@@ -38,10 +38,10 @@ const { startServer, stopServer, test } = server_1.default;
                 console.log('Hello world!');
             });
         }
-        yield startServer();
-        stopServer();
+        startServer();
         test();
         run();
+        stopServer();
     }
     catch (error) {
         core_1.default.setFailed(error.message);

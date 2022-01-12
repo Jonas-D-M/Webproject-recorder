@@ -5,7 +5,7 @@ import path from 'path'
 import server from './server'
 // const readmeBox = require("readme-box").ReadmeBox;
 // const chunk = require("chunk");
-const { initServer, test } = server
+const { startServer, stopServer, test } = server
 
 ;(async () => {
   try {
@@ -19,7 +19,8 @@ const { initServer, test } = server
       console.log('Hello world!')
     }
 
-    // initServer()
+    startServer()
+    stopServer()
     test()
 
     run()

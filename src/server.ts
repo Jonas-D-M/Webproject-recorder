@@ -2,10 +2,15 @@ import connect from 'connect'
 import serveStatic from 'serve-static'
 
 export default (() => {
-  const initServer = (port = 3000, dirname = '.') => {
+  const startServer = (port = 3000, dirname = '.') => {
     connect()
       .use(serveStatic(dirname))
       .listen(port, () => console.log(`Server running on ${port}`))
+  }
+
+  const stopServer = () => {
+    console.log('Server is stopping')
+    process.exit()
   }
 
   const test = () => {
@@ -15,7 +20,8 @@ export default (() => {
   }
 
   return {
-    initServer,
+    startServer,
     test,
+    stopServer,
   }
 })()

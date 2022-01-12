@@ -1697,7 +1697,7 @@ const path = __nccwpck_require__(17);
 
   // fs.readFile("/github/workspace/README.md", logFile);
 
-  fs.readdir(testFolder, (err, files) => {
+  fs.readdir(".", (err, files) => {
     files.forEach((file) => {
       console.log(file);
     });

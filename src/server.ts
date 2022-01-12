@@ -10,6 +10,7 @@ export default (() => {
 
   const test = () => {
     console.log('this is a message from the server.ts module')
+    console.log('')
   }
 
   return {

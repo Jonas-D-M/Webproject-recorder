@@ -19,7 +19,7 @@ const { initServer, test } = server
       console.log('Hello world!')
     }
 
-    initServer()
+    // initServer()
     test()
 
     run()

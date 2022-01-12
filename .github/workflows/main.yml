@@ -1,5 +1,5 @@
-name: Main
-on: workflow_dispatch
+name: Test action
+on: workflow_dispatch:
 
 jobs:
   test:

@@ -1,7 +1,8 @@
-const core = require("@actions/core");
+import core from "@actions/core";
 // const github = require("@actions/github");
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+
 // const readmeBox = require("readme-box").ReadmeBox;
 // const chunk = require("chunk");
 

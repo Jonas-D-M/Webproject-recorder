@@ -16,7 +16,8 @@ jobs:
       - name: Commit and push build
         continue-on-error: true
         run: |
-          git config --global user.name 'Your Name'
+          git config --global user.name 'Workflow-Builder'
           git config --global user.email 'your-username@users.noreply.github.com'
-          git commit -am "Automated report"
+          git add .
+          git commit -am "Generated new build"
           git push

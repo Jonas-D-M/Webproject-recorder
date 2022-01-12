@@ -1,40 +1,29 @@
-import core from "@actions/core";
+import core from '@actions/core'
 // const github = require("@actions/github");
-import fs from "fs";
-import path from "path";
-
+import fs from 'fs'
+import path from 'path'
+import server from './server'
 // const readmeBox = require("readme-box").ReadmeBox;
 // const chunk = require("chunk");
+const { initServer, test } = server
 
-(async () => {
-  // const githubToken = core.getInput("github-token");
-  // const filePath = path.join(
-  //   process.env.GITHUB_WORKSPACE,
-  //   core.getInput("json-file-path")
-  // );
+;(async () => {
+  try {
+    fs.readdir('.', (err, files) => {
+      files.forEach(file => {
+        console.log(file)
+      })
+    })
 
-  // const columns = core.getInput("columns");
-  // const data = fs.readFileSync(filePath, "utf8");
-  // const json = JSON.parse(data);
-  // const fileToUsePath = core.getInput("file-to-use");
+    async function run() {
+      console.log('Hello world!')
+    }
 
-  // fs.readFile("/github/workspace/README.md", logFile);
+    initServer()
+    test()
 
-  fs.readdir(".", (err, files) => {
-    files.forEach((file) => {
-      console.log(file);
-    });
-  });
-
-  // function logFile(err, data) {
-  //   err
-  //     ? Function("error", "throw error")(err)
-  //     : console.log(JSON.stringify(data));
-  // }
-
-  async function run() {
-    console.log("Hello world!");
+    run()
+  } catch (error: any) {
+    core.setFailed(error.message)
   }
-
-  run();
-})();
+})()

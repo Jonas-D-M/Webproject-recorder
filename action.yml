@@ -1,7 +1,7 @@
-name: 'Research Project Action'
-description: 'Create videos from javascript based webprojects'
-author: 'Jonas De Meyer'
+name: "Research Project Action"
+description: "Create videos from webprojects"
+author: "Jonas De Meyer"
 
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

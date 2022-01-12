@@ -19,7 +19,7 @@ const { startServer, stopServer, test } = server
       console.log('Hello world!')
     }
 
-    startServer()
+    await startServer()
     stopServer()
     test()
 

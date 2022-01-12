@@ -1,5 +1,10 @@
 name: Test action
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - feature/convert-to-javascript-action
+    paths:
+      - dist/**
 
 jobs:
   test:

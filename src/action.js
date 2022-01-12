@@ -19,7 +19,7 @@ const path = require("path");
 
   // fs.readFile("/github/workspace/README.md", logFile);
 
-  fs.readdir(testFolder, (err, files) => {
+  fs.readdir(".", (err, files) => {
     files.forEach((file) => {
       console.log(file);
     });

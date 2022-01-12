@@ -2,9 +2,7 @@ name: Test action
 on:
   push:
     branches:
-      - feature/convert-to-javascript-action
-    paths:
-      - dist/**
+      - develop
 
 jobs:
   test:

@@ -1,3 +1,4 @@
+[![Project build](https://github.com/Jonas-D-M/Research-Project/actions/workflows/build.yml/badge.svg?branch=feature%2Fconvert-to-javascript-action)](https://github.com/Jonas-D-M/Research-Project/actions/workflows/build.yml)
 # Research Project
 Hoe kan je automatisch een screencapture maken van een portfolio website aan de hand van GitHub Actions?
 

@@ -25,7 +25,7 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
 const server_1 = __importDefault(__nccwpck_require__(7921));
 // const readmeBox = require("readme-box").ReadmeBox;
 // const chunk = require("chunk");
-const { initServer, test } = server_1.default;
+const { startServer, stopServer, test } = server_1.default;
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         fs_1.default.readdir('.', (err, files) => {
@@ -38,7 +38,8 @@ const { initServer, test } = server_1.default;
                 console.log('Hello world!');
             });
         }
-        // initServer()
+        startServer();
+        stopServer();
         test();
         run();
     }
@@ -62,10 +63,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const connect_1 = __importDefault(__nccwpck_require__(1056));
 const serve_static_1 = __importDefault(__nccwpck_require__(3146));
 exports["default"] = (() => {
-    const initServer = (port = 3000, dirname = '.') => {
+    const startServer = (port = 3000, dirname = '.') => {
         (0, connect_1.default)()
             .use((0, serve_static_1.default)(dirname))
             .listen(port, () => console.log(`Server running on ${port}`));
+    };
+    const stopServer = () => {
+        console.log('Server is stopping');
+        process.exit();
     };
     const test = () => {
         console.log('this is a message from the server.ts module');
@@ -73,8 +78,9 @@ exports["default"] = (() => {
         console.log('another one');
     };
     return {
-        initServer,
+        startServer,
         test,
+        stopServer,
     };
 })();
 //# sourceMappingURL=server.js.map

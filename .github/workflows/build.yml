@@ -22,3 +22,10 @@ jobs:
           git add dist/index.js
           git commit -am "Generated new build"
           git push
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./

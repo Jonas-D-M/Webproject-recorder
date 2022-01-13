@@ -2,14 +2,10 @@ import core from '@actions/core'
 // const github = require("@actions/github");
 import fs from 'fs'
 import path from 'path'
-import puppeteerServer from './puppeteer'
-import selenium from './selenium'
+import puppeteer from './puppeteer'
 import server from './server'
-// const readmeBox = require("readme-box").ReadmeBox;
-// const chunk = require("chunk");
 const { startServer, stopServer, test } = server
-// const { example } = selenium
-const { example } = puppeteerServer
+const { example } = puppeteer
 
 ;(async () => {
   try {

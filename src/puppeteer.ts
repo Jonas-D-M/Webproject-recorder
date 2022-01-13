@@ -5,11 +5,13 @@ export default (() => {
   const browserConfig = {
     headless: false,
     ignoreHTTPSErrors: true,
+
     args: [
       '--no-sandbox',
       '--disable-gpu',
       '--start-maximized',
       '--disable-dev-shm-usage',
+      '--headless',
     ],
   }
   const recordConfig = {

@@ -40,7 +40,6 @@ export default (() => {
         const recordConfig = {
           followNewTab: true,
           fps: 60,
-          ffmpeg_Path: ffmpegPath,
           videoFrame: {
             width: 1920,
             height: 1080,

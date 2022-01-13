@@ -12,6 +12,8 @@ import { searchDir } from './utils'
     const { example } = puppeteer
 
     const ffmpegPath = getInput('ffmpeg-path')
+    console.log('input: ', ffmpegPath)
+
     example(ffmpegPath)
     searchDir('./tmp', /\test.mp4$/, function (filename) {
       console.log('-- found: ', filename)

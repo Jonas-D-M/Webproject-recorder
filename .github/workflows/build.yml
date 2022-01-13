@@ -31,10 +31,10 @@ jobs:
         uses: actions/checkout@v2
       - name: install ffmpeg
         run: |
-          sudo apt-get install ffmpeg
+          sudo apt install ffmpeg
       - name: get ffmpeg  path
         id: ffmpeg-path
-        run: echo "::set-output name=path::$(whereis ffmpeg)"
+        run: echo "::set-output name=path::$(which ffmpeg)"
       - name: test the github action
         uses: ./
         with:

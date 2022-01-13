@@ -39,4 +39,4 @@ jobs:
       - name: test the github action
         uses: ./
         with:
-          - ffmpeg-path: ${{ steps.ffmpeg-path.outputs.path}}
+          ffmpeg-path: ${{ steps.ffmpeg-path.outputs.path}}

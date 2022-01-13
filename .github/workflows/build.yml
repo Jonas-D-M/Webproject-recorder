@@ -27,5 +27,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install ffmpeg
+      - name: get ffmpeg  path
+        id: ffmpeg-path
+        run: echo "::set-output name=path::$(whereis ffmpeg)"
+      - name: test the github action
+        uses: ./
+        with:
+          - ffmpeg-path: ${{ steps.ffmpeg-path.outputs.path}}

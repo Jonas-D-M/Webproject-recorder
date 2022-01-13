@@ -1,18 +1,30 @@
-import core from '@actions/core'
+import { setFailed, getInput } from '@actions/core'
 // const github = require("@actions/github");
-import fs from 'fs'
-import path from 'path'
+// import { series } from 'async'
+// import { exec } from 'child_process'
 import puppeteer from './puppeteer'
-import server from './server'
-const { startServer, stopServer, test } = server
-const { example } = puppeteer
-
+// import server from './server'
+// import { findNPMCommands } from './utils'
+import { searchDir } from './utils'
 ;(async () => {
   try {
-    example()
+    // const { startServer, stopServer, test } = server
+    const { example } = puppeteer
+
+    const ffmpegPath = getInput('ffmpeg-path')
+    example(ffmpegPath)
+    searchDir('./tmp', /\test.mp4$/, function (filename) {
+      console.log('-- found: ', filename)
+    })
+    // searchDir('./test', /\index.html$/, function (filename) {
+    //   console.log('-- found: ', filename)
+    // })
+    // const { buildCMD, startCMD } = findNPMCommands('package.json')
+
+    // series([() => exec(buildCMD), () => exec(startCMD)])
   } catch (error: any) {
     console.log(error)
 
-    core.setFailed(error.message)
+    setFailed(error.message)
   }
 })()

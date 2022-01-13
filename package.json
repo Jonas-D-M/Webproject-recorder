@@ -20,9 +20,12 @@
   "dependencies": {
     "@actions/glob": "^0.2.0",
     "@vercel/ncc": "^0.33.1",
+    "chromedriver": "^97.0.0",
+    "geckodriver": "^3.0.1",
     "node-static": "^0.7.11",
     "puppeteer": "^13.0.1",
-    "puppeteer-screen-recorder": "^2.0.2"
+    "puppeteer-screen-recorder": "^2.0.2",
+    "selenium-webdriver": "^4.1.1"
   },
   "devDependencies": {
     "@types/connect": "^3.4.35",

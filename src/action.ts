@@ -1,4 +1,4 @@
-import { setFailed, getInput } from '@actions/core'
+import core from '@actions/core'
 // const github = require("@actions/github");
 // import { series } from 'async'
 // import { exec } from 'child_process'
@@ -11,7 +11,7 @@ import { searchDir } from './utils'
     // const { startServer, stopServer, test } = server
     const { example } = puppeteer
 
-    const ffmpegPath = getInput('ffmpeg-path')
+    const ffmpegPath = core.getInput('ffmpeg-path')
     console.log('input: ', ffmpegPath)
 
     example(ffmpegPath)
@@ -27,6 +27,6 @@ import { searchDir } from './utils'
   } catch (error: any) {
     console.log(error)
 
-    setFailed(error.message)
+    core.setFailed(error.message)
   }
 })()

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/action.js -o dist",
+    "build": "tsc && ncc build lib/action.js -m -o dist",
+    "dev": "npx nodemon --watch 'src/*' --exec 'ts-node' src/action.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,14 +21,20 @@
   "dependencies": {
     "@actions/glob": "^0.2.0",
     "@vercel/ncc": "^0.33.1",
+    "chromedriver": "^97.0.0",
+    "geckodriver": "^3.0.1",
     "node-static": "^0.7.11",
     "puppeteer": "^13.0.1",
-    "puppeteer-screen-recorder": "^2.0.2"
+    "puppeteer-screen-recorder": "^2.0.2",
+    "selenium-webdriver": "^4.1.1"
   },
   "devDependencies": {
+    "@types/chromedriver": "^81.0.1",
     "@types/connect": "^3.4.35",
     "@types/node": "^17.0.8",
     "@types/node-static": "^0.7.7",
-    "@types/serve-static": "^1.13.10"
+    "@types/selenium-webdriver": "^4.0.16",
+    "@types/serve-static": "^1.13.10",
+    "ts-node": "^10.4.0"
   }
 }

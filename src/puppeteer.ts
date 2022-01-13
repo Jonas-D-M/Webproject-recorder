@@ -1,5 +1,5 @@
 import puppeteer, { Page, Puppeteer } from 'puppeteer'
-import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
+import { PuppeteerScreenRecorder } from './puppeteerRecorder'
 
 export default (() => {
   const initBrowser = async () => {

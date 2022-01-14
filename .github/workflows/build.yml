@@ -34,11 +34,12 @@ jobs:
           sudo apt install ffmpeg
       - name: get ffmpeg  path
         id: get-ffmpeg-path
-        run: echo "::set-output name=path::$(which ffmpeg)"
-      - name: find missing dependencies
-        run: |
-          ldd chrome | grep not
+        run: echo "::set-output name=ffmpeg::$(which ffmpeg)"
+      - name: get chrome path
+        id: get-chrome-path
+        run: echo "::set-output name=chrome::$(which google-chrome-stable)"
       - name: test the github action
         uses: ./
         with:
-          ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.path}}
+          ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
+          chrome-path: ${{steps.get-chrome-path.outputs.chrome}}

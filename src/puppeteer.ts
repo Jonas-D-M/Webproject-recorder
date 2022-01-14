@@ -2,10 +2,13 @@ import puppeteer, { Page, Puppeteer } from 'puppeteer'
 import { PuppeteerScreenRecorder } from './puppeteerRecorder'
 
 export default (() => {
-  const initBrowser = async () => {
+  const initBrowser = async (executablePath: string) => {
     return new Promise<puppeteer.Browser>(async (resolve, reject) => {
       try {
-        const browserConfig = {
+        const browserConfig: puppeteer.LaunchOptions &
+          puppeteer.BrowserLaunchArgumentOptions &
+          puppeteer.BrowserConnectOptions = {
+          executablePath,
           headless: true,
           ignoreHTTPSErrors: true,
           args: [
@@ -66,8 +69,8 @@ export default (() => {
     await page.setViewport(resolution)
   }
 
-  const example = async (ffmpegPath: string) => {
-    const browser = await initBrowser()
+  const example = async (ffmpegPath: string, executablePath: string) => {
+    const browser = await initBrowser(executablePath)
     const url = 'https://github.com'
     const resolution = { width: 1920, height: 1080 }
     const savePath = './tmp/test.mp4'

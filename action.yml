@@ -5,6 +5,9 @@ inputs:
   ffmpeg-path:
     description: 'Path to ffmpeg installation'
     required: true
+  chrome-path:
+    description: 'Path to chrome installation'
+    required: true
 
 runs:
   using: 'node12'

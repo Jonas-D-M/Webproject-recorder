@@ -11,10 +11,11 @@ import { searchDir } from './utils'
     const { example } = puppeteer
 
     const ffmpegPath = core.getInput('ffmpeg-path')
+    const chromePath = core.getInput('chrome-path')
     // console.log('input: ', ffmpegPath)
 
-    await example(ffmpegPath)
-    // example('/usr/bin/ffmpeg')
+    // await example(ffmpegPath)
+    example('/usr/bin/ffmpeg', '/usr/bin/google-chrome-stable')
     searchDir('./tmp', /\test.mp4$/, function (filename) {
       console.log('-- found: ', filename)
     })

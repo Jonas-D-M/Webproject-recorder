@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/action.js -m -o dist",
+    "build": "tsc && ncc build lib/action.js -o dist --license licenses.txt",
     "dev": "npx nodemon --watch 'src/*' --exec 'ts-node' src/action.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,12 +22,9 @@
     "@actions/glob": "^0.2.0",
     "@vercel/ncc": "^0.33.1",
     "async": "^3.2.3",
-    "chromedriver": "^97.0.0",
-    "geckodriver": "^3.0.1",
+    "fluent-ffmpeg": "^2.1.2",
     "node-static": "^0.7.11",
-    "puppeteer": "^13.0.1",
-    "puppeteer-screen-recorder": "^2.0.2",
-    "selenium-webdriver": "^4.1.1"
+    "puppeteer": "^13.0.1"
   },
   "devDependencies": {
     "@types/async": "^3.2.12",

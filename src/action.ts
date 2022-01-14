@@ -23,7 +23,6 @@ import { searchDir } from './utils'
     //   console.log('-- found: ', filename)
     // })
     // const { buildCMD, startCMD } = findNPMCommands('package.json')
-
     // series([() => exec(buildCMD), () => exec(startCMD)])
   } catch (error: any) {
     console.log(error)

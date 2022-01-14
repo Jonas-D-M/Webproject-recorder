@@ -16,7 +16,8 @@ const utils_1 = __nccwpck_require__(918);
 (async () => {
     try {
         const { example } = puppeteer_1.default;
-        example('/usr/bin/ffmpeg');
+        const ffmpegPath = core_1.default.getInput('ffmpeg-path');
+        example(ffmpegPath);
         (0, utils_1.searchDir)('./tmp', /\test.mp4$/, function (filename) {
             console.log('-- found: ', filename);
         });

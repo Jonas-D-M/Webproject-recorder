@@ -60,7 +60,6 @@ exports["default"] = (() => {
                 const browser = await puppeteer_1.default.launch(browserConfig).then(async (br) => {
                     return br;
                 });
-                console.info(`Browser is running with process id ${browser.process()?.pid}`);
                 resolve(browser);
             }
             catch (error) {

@@ -48,7 +48,6 @@ export const findNPMCommands = (path: string) => {
 
     const buildCMD = packagejson['scripts'].build
     const startCMD = packagejson['scripts'].start
-
     return { buildCMD, startCMD }
   } catch (error) {
     throw error

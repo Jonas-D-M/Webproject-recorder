@@ -28,6 +28,6 @@ import { searchDir } from './utils'
   } catch (error: any) {
     console.log(error)
 
-    core.setFailed(error.message)
+    core.setFailed(error)
   }
 })()

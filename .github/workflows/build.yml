@@ -33,9 +33,9 @@ jobs:
         run: |
           sudo apt install ffmpeg
       - name: get ffmpeg  path
-        id: ffmpeg-path
+        id: get-ffmpeg-path
         run: echo "::set-output name=path::$(which ffmpeg)"
       - name: test the github action
         uses: ./
         with:
-          ffmpeg-path: ${{ steps.ffmpeg-path.outputs.path}}
+          ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.path}}

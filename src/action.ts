@@ -1,4 +1,4 @@
-import core from '@actions/core'
+import * as core from '@actions/core'
 // const github = require("@actions/github");
 // import { series } from 'async'
 // import { exec } from 'child_process'

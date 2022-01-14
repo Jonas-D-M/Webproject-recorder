@@ -35,6 +35,9 @@ jobs:
       - name: get ffmpeg  path
         id: get-ffmpeg-path
         run: echo "::set-output name=path::$(which ffmpeg)"
+      - name: find missing dependencies
+        run: |
+          ldd chrome | grep not
       - name: test the github action
         uses: ./
         with:

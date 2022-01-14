@@ -24,7 +24,7 @@ const utils_1 = __nccwpck_require__(918);
     }
     catch (error) {
         console.log(error);
-        core_1.default.setFailed(error.message);
+        core_1.default.setFailed(error);
     }
 })();
 //# sourceMappingURL=action.js.map

@@ -25,8 +25,7 @@
     "async": "^3.2.3",
     "fluent-ffmpeg": "^2.1.2",
     "node-static": "^0.7.11",
-    "puppeteer": "^13.0.1",
-    "puppeteer-core": "^13.0.1"
+    "puppeteer": "^13.0.1"
   },
   "devDependencies": {
     "@types/async": "^3.2.12",

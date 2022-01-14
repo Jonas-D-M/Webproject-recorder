@@ -36,7 +36,7 @@ const utils_1 = __nccwpck_require__(918);
     try {
         const { example } = puppeteer_1.default;
         const ffmpegPath = core.getInput('ffmpeg-path');
-        example(ffmpegPath);
+        await example(ffmpegPath);
         (0, utils_1.searchDir)('./tmp', /\test.mp4$/, function (filename) {
             console.log('-- found: ', filename);
         });
@@ -66,10 +66,11 @@ exports["default"] = (() => {
         return new Promise(async (resolve, reject) => {
             try {
                 const browserConfig = {
-                    headless: false,
+                    headless: true,
                     ignoreHTTPSErrors: true,
                     args: [
                         '--no-sandbox',
+                        '--disable-setuid-sandbox',
                         '--disable-gpu',
                         '--start-maximized',
                         '--disable-dev-shm-usage',
@@ -159,6 +160,7 @@ const smoothAutoScroll = async (page) => {
             }
             catch (error) {
                 reject(error);
+                throw error;
             }
         });
     });
@@ -181,6 +183,7 @@ const autoScroll = async (page) => {
             }
             catch (error) {
                 reject(error);
+                throw error;
             }
         });
     });

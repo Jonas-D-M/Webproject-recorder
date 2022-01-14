@@ -11,11 +11,11 @@ import { searchDir } from './utils'
     // const { startServer, stopServer, test } = server
     const { example } = puppeteer
 
-    // const ffmpegPath = core.getInput('ffmpeg-path')
+    const ffmpegPath = core.getInput('ffmpeg-path')
     // console.log('input: ', ffmpegPath)
 
-    // example(ffmpegPath)
-    example('/usr/bin/ffmpeg')
+    example(ffmpegPath)
+    // example('/usr/bin/ffmpeg')
     searchDir('./tmp', /\test.mp4$/, function (filename) {
       console.log('-- found: ', filename)
     })

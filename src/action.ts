@@ -14,7 +14,7 @@ import { searchDir } from './utils'
     const ffmpegPath = core.getInput('ffmpeg-path')
     // console.log('input: ', ffmpegPath)
 
-    example(ffmpegPath)
+    await example(ffmpegPath)
     // example('/usr/bin/ffmpeg')
     searchDir('./tmp', /\test.mp4$/, function (filename) {
       console.log('-- found: ', filename)

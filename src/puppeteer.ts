@@ -6,10 +6,11 @@ export default (() => {
     return new Promise<puppeteer.Browser>(async (resolve, reject) => {
       try {
         const browserConfig = {
-          headless: false,
+          headless: true,
           ignoreHTTPSErrors: true,
           args: [
             '--no-sandbox',
+            '--disable-setuid-sandbox',
             '--disable-gpu',
             '--start-maximized',
             '--disable-dev-shm-usage',
@@ -117,6 +118,7 @@ const smoothAutoScroll = async (page: Page) => {
         }, delay)
       } catch (error) {
         reject(error)
+        throw error
       }
     })
   })
@@ -141,6 +143,7 @@ const autoScroll = async (page: Page) => {
         }, 200)
       } catch (error) {
         reject(error)
+        throw error
       }
     })
   })

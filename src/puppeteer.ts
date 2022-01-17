@@ -102,18 +102,14 @@ export default (() => {
   const recordLocalServer = async (
     ffmpegPath: string,
     executablePath: string,
-    videoName?: string,
+    sitemap: Array<string>,
+    isStatic = false,
   ) => {
     const browser = await initBrowser(executablePath)
     const url = 'http://localhost:3000'
 
-    const savePath = `./video/${videoName ?? 'showcase.mp4'}`
-
     try {
-      const urlMap = generateUrlMap(
-        ['/home', '/afdelingen', '/over-ons', '/ons-team', '/shop', '/nieuws'],
-        url,
-      )
+      const urlMap = generateUrlMap(sitemap, url, isStatic)
 
       console.info('Recording pages')
       await recordMultiplePages(browser, ffmpegPath, urlMap)

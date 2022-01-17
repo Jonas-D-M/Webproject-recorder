@@ -1,29 +1,56 @@
 import * as core from '@actions/core'
-// import { series } from 'async'
-// import { exec } from 'child_process'
+import { series } from 'async'
+import { exec } from 'child_process'
 import puppeteer from './puppeteer'
-// import server from './server'
-// import { findNPMCommands } from './utils'
+import server from './server'
+import {
+  findNPMCommands,
+  findPackageJson,
+  runCommands,
+  stopPMServer,
+} from './utils'
 import { searchDir } from './utils'
 ;(async () => {
   try {
-    // const { startServer, stopServer, test } = server
-    const { example } = puppeteer
+    const { startServer, stopServer, test } = server
+    const { example, recordLocalServer } = puppeteer
 
-    const ffmpegPath = core.getInput('ffmpeg-path')
-    const chromePath = core.getInput('chrome-path')
-    // console.log('input: ', ffmpegPath)
+    // General vars
+    const env = process.argv[2] || 'dev'
+    console.log('The process env: ', env)
+    const ffmpegPath =
+      env !== 'dev' ? core.getInput('ffmpeg-path') : '/usr/bin/ffmpeg'
+    const chromePath =
+      env !== 'dev'
+        ? core.getInput('chrome-path')
+        : '/usr/bin/google-chrome-stable'
 
-    // await example(ffmpegPath)
-    example('/usr/bin/ffmpeg', '/usr/bin/google-chrome-stable')
-    searchDir('./tmp', /\test.mp4$/, function (filename) {
-      console.log('-- found: ', filename)
-    })
-    // searchDir('./test', /\index.html$/, function (filename) {
-    //   console.log('-- found: ', filename)
-    // })
-    // const { buildCMD, startCMD } = findNPMCommands('package.json')
-    // series([() => exec(buildCMD), () => exec(startCMD)])
+    const projectDir = 'test2'
+
+    const hasPackageJson = findPackageJson(projectDir)
+
+    if (hasPackageJson) {
+      const { buildCMD, startCMD } = findNPMCommands(
+        `${projectDir}/package.json`,
+      )
+      // console.log(buildCMD, startCMD)
+
+      // series([
+      //   () => exec(`cd test2 && npm run ${buildCMD}`),
+      //   // () => exec(`npm run ${startCMD}`),
+      // ])
+      console.log('running commands')
+      await runCommands(buildCMD, startCMD)
+      console.log('starting server')
+      await recordLocalServer(ffmpegPath, chromePath)
+      console.log('stopping server')
+
+      await stopPMServer()
+    } else {
+      startServer(3000, '/test')
+      await recordLocalServer(ffmpegPath, chromePath)
+      stopServer()
+    }
   } catch (error: any) {
     console.log(error)
 

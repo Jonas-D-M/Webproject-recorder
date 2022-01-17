@@ -1,16 +1,18 @@
 import fs from 'fs'
-import { createServer, Server } from 'http'
-import { Server as StaticServer } from 'node-static'
+import http from 'http'
+import nodestatic from 'node-static'
 
 export default (() => {
-  let file = new StaticServer(__dirname)
-  let server: Server
+  // let file = new StaticServer(__dirname)
+  let server: http.Server
 
-  const startServer = (port = 3000, dirname = '.') => {
-    server = createServer(function (req, res) {
-      file.serve(req, res)
-      console.log(`Server is serving on port ${port}`)
-    }).listen(port)
+  const startServer = (port = 3000, dirname?: string) => {
+    const file = new nodestatic.Server(`${process.cwd()}${dirname}`)
+    server = http
+      .createServer(function (req, res) {
+        file.serve(req, res)
+      })
+      .listen(port)
   }
 
   const stopServer = () => {

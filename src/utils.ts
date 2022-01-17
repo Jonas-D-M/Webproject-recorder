@@ -1,5 +1,6 @@
 import { join } from 'path'
 import { readdirSync, lstatSync, existsSync, readFile, readFileSync } from 'fs'
+import pm2 from 'pm2'
 
 export const searchDirRecursive = (
   startPath: string,
@@ -44,7 +45,6 @@ export const findNPMCommands = (path: string) => {
   try {
     const data = readFileSync(path, { encoding: 'utf-8', flag: 'r' })
     const packagejson = JSON.parse(data)
-    console.log(packagejson)
 
     const buildCMD = packagejson['scripts'].build
     const startCMD = packagejson['scripts'].start
@@ -54,3 +54,70 @@ export const findNPMCommands = (path: string) => {
     throw error
   }
 }
+
+export const findPackageJson = (path: string) => {
+  try {
+    readFileSync(`${path}/package.json`, { encoding: 'utf-8', flag: 'r' })
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+export const runCommands = async (buildCMD: string, startCMD: string) => {
+  const options = {
+    script: `cd test2 && npm -- run start`,
+    name: 'site-server',
+    max_restarts: 0,
+    node_args: '--no-autorestart',
+  }
+
+  return new Promise<void>((resolve, reject) => {
+    try {
+      pm2.connect(function (err) {
+        if (err) {
+          throw err
+        }
+        pm2.start(options, (err, apps) => {
+          if (err) {
+            throw err
+          }
+          pm2.disconnect()
+          resolve()
+        })
+      })
+    } catch (error) {
+      console.log('threw an error: ', error)
+      reject()
+    }
+  })
+}
+
+export const stopPMServer = () => {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      pm2.delete('site-server', (err, proc) => {
+        if (err) {
+          console.log(err)
+          process.exit(2)
+        }
+        resolve()
+      })
+    } catch (error) {
+      pm2.disconnect()
+      reject()
+    }
+  })
+}
+
+export const retry = (fn: any, ms: number) =>
+  new Promise(resolve => {
+    fn()
+      .then(resolve)
+      .catch(() => {
+        setTimeout(() => {
+          console.log('retrying...')
+          retry(fn, ms).then(resolve)
+        }, ms)
+      })
+  })

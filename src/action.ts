@@ -48,28 +48,28 @@ import { config } from 'dotenv'
       await recordLocalServer(ffmpegPath, chromePath, sitemap)
       core.endGroup()
     } else {
-      // core.notice('No package.json found, handling it as a regular HTML site')
-      // core.startGroup('Creating local server...')
-      // const sitemap = [
-      //   '/index',
-      //   '/vrijdag',
-      //   '/zaterdag',
-      //   '/info',
-      //   '/reglement',
-      //   '/sponsors',
-      //   '/inschrijvingen',
-      //   '/contact',
-      // ]
-      // console.info('starting static server')
-      // await startStaticPMServer()
-      // core.endGroup()
-      // core.startGroup('Creating recording...')
-      // await recordLocalServer(ffmpegPath, chromePath, sitemap, true)
-      // core.endGroup()
+      core.notice('No package.json found, handling it as a regular HTML site')
+      core.startGroup('Creating local server...')
+      const sitemap = [
+        '/index',
+        '/vrijdag',
+        '/zaterdag',
+        '/info',
+        '/reglement',
+        '/sponsors',
+        '/inschrijvingen',
+        '/contact',
+      ]
+      console.info('starting static server')
+      await startStaticPMServer()
+      core.endGroup()
+      core.startGroup('Creating recording...')
+      await recordLocalServer(ffmpegPath, chromePath, sitemap, true)
+      core.endGroup()
     }
-    // console.info('stopping server')
-    // await stopPMServer()
-    // core.startGroup('Uploading video to firebase...')
+    console.info('stopping server')
+    await stopPMServer()
+    core.startGroup('Uploading video to firebase...')
     const serviceAccount = require('../service-account.json')
     const bucket = process.env.BUCKET || ''
 

@@ -12,7 +12,6 @@ inputs:
 runs:
   using: 'node12'
   main: 'dist/index.js'
-
-branding:
-  icon: "camera",
-  color: "gray-dark"
+# branding:
+#   icon: "camera",
+#   color: "gray-dark"

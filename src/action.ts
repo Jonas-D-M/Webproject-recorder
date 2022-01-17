@@ -2,10 +2,14 @@ import * as core from '@actions/core'
 import puppeteer from './puppeteer'
 import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
+import firebase from './firebase'
+import { config } from 'dotenv'
 ;(async () => {
   try {
+    config()
     const { startPMServer, startStaticPMServer, stopPMServer } = server
     const { recordLocalServer } = puppeteer
+    const { uploadFileToFirebase } = firebase
 
     // General vars
     const env = process.argv[2] || 'dev'
@@ -19,14 +23,17 @@ import { findNPMCommands, findPackageJson } from './utils'
 
     const projectDir = 'test'
 
+    core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
-
+    core.endGroup()
     if (hasPackageJson) {
+      core.startGroup('Starting local server...')
       const { buildCMD, startCMD } = findNPMCommands(
         `${projectDir}/package.json`,
       )
       console.info('running commands')
       await startPMServer(buildCMD, startCMD)
+      core.endGroup()
 
       console.info('starting server')
       const sitemap = [
@@ -37,24 +44,43 @@ import { findNPMCommands, findPackageJson } from './utils'
         '/shop',
         '/nieuws',
       ]
+      core.startGroup('Creating recording...')
       await recordLocalServer(ffmpegPath, chromePath, sitemap)
+      core.endGroup()
     } else {
-      const sitemap = [
-        '/index',
-        '/vrijdag',
-        '/zaterdag',
-        '/info',
-        '/reglement',
-        '/sponsors',
-        '/inschrijvingen',
-        '/contact',
-      ]
-      console.info('starting static server')
-      await startStaticPMServer()
-      await recordLocalServer(ffmpegPath, chromePath, sitemap, true)
+      // core.notice('No package.json found, handling it as a regular HTML site')
+      // core.startGroup('Creating local server...')
+      // const sitemap = [
+      //   '/index',
+      //   '/vrijdag',
+      //   '/zaterdag',
+      //   '/info',
+      //   '/reglement',
+      //   '/sponsors',
+      //   '/inschrijvingen',
+      //   '/contact',
+      // ]
+      // console.info('starting static server')
+      // await startStaticPMServer()
+      // core.endGroup()
+      // core.startGroup('Creating recording...')
+      // await recordLocalServer(ffmpegPath, chromePath, sitemap, true)
+      // core.endGroup()
     }
-    console.info('stopping server')
-    await stopPMServer()
+    // console.info('stopping server')
+    // await stopPMServer()
+    // core.startGroup('Uploading video to firebase...')
+    const serviceAccount = require('../service-account.json')
+    const bucket = process.env.BUCKET || ''
+
+    const url = await uploadFileToFirebase(
+      serviceAccount,
+      bucket,
+      './video/showcase-video.mp4',
+      'showcase-video',
+    )
+    console.log(url)
+    core.endGroup()
   } catch (error: any) {
     console.log(error)
 

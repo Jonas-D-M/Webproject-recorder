@@ -3,7 +3,7 @@ import pm2 from 'pm2'
 export default (() => {
   const startPMServer = async (buildCMD: string, startCMD: string) => {
     const options = {
-      script: `cd test2 && npm -- run ${startCMD}`,
+      script: `npm -- run ${startCMD}`,
       name: 'site-server',
       max_restarts: 0,
       node_args: '--no-autorestart',
@@ -36,7 +36,7 @@ export default (() => {
       name: 'site-server',
       max_restarts: 0,
       env: {
-        PM2_SERVE_PATH: './test',
+        PM2_SERVE_PATH: process.cwd(),
         PM2_SERVE_PORT: '3000',
         PM2_SERVE_HOMEPAGE: './index.html',
       },

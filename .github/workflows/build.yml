@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build:
@@ -38,6 +40,8 @@ jobs:
           short_tags: true
           # If this is set to true, *every* commit will be treated as a new version.
           bump_each_commit: false
+      - name: Check package version
+        uses: technote-space/package-version-check-action@v1
       - name: Commit and push build
         run: |
           git config --global user.name 'Workflow-Builder'
@@ -45,6 +49,11 @@ jobs:
           git add .
           git commit -am "Generated new build" || echo "No changes to commit"
           git push
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+        env:
+          REPO: ${{github.repository}}
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest

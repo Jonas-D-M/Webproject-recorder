@@ -20,6 +20,7 @@ jobs:
           npm ci
           npm run build
       - name: Versioning
+        id: versioning
         uses: paulhatch/semantic-version@v4.0.2
         with:
           # The prefix to use to identify tags
@@ -47,8 +48,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          tag_name: ${{github.ref}}
-          release_name: Release ${{github.ref}}
+          tag_name: ${{steps.versioning.outputs.version}}
+          release_name: Release ${{steps.versioning.outputs.version}}
           body: |
             ${{steps.Changelog.outputs.changelog}}
             draft: false

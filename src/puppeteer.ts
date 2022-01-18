@@ -153,7 +153,7 @@ export default (() => {
   const generateShowcaseVideo = (vidName?: string) => {
     return new Promise<void>((resolve, reject) => {
       try {
-        const videoName = vidName ?? 'showcase-video.mp4'
+        const videoName = 'showcase-video.mp4'
         let mergedVideo = fluent_ffmpeg()
 
         const tmpDirPath = path.join(process.cwd(), 'tmpvid')
@@ -223,7 +223,7 @@ export default (() => {
     const browser = await initBrowser(executablePath)
     const url = 'https://github.com'
     const resolution = { width: 1920, height: 1080 }
-    const savePath = `./video/${videoName ?? 'showcase.mp4'}`
+    const savePath = `./video/${'showcase.mp4'}`
 
     const [page] = await browser.pages()
 

@@ -56,9 +56,9 @@ export default (() => {
           args: minimalArgs,
         }
         const browser = await puppeteer.launch(browserConfig)
-        console.info(
-          `Browser is running with process id ${browser.process()?.pid}`,
-        )
+        // console.info(
+        //   `Browser is running with process id ${browser.process()?.pid}`,
+        // )
         resolve(browser)
       } catch (error) {
         reject(error)

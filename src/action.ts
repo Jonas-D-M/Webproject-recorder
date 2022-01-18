@@ -20,8 +20,7 @@ import { config } from 'dotenv'
       env !== 'dev'
         ? core.getInput('chrome-path')
         : '/usr/bin/google-chrome-stable'
-
-    const projectDir = 'test'
+    const projectDir = '.'
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)

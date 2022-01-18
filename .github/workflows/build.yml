@@ -40,16 +40,9 @@ jobs:
           short_tags: true
           # If this is set to true, *every* commit will be treated as a new version.
           bump_each_commit: false
-      - name: Check package version
-        uses: technote-space/package-version-check-action@v1
-
-      - name: Changelog
-        uses: scottbrenner/generate-changelog-action@master
-        id: Changelog
-        env:
-          REPO: ${{github.repository}}
       - name: Create Release
         id: create_release
+        continue-on-error: true
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

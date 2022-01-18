@@ -1,20 +1,88 @@
-import connect from 'connect'
-import serveStatic from 'serve-static'
+import pm2 from 'pm2'
 
 export default (() => {
-  const initServer = (port = 3000, dirname = '.') => {
-    connect()
-      .use(serveStatic(dirname))
-      .listen(port, () => console.log(`Server running on ${port}`))
+  const startPMServer = async (buildCMD: string, startCMD: string) => {
+    const options = {
+      script: `npm -- run ${startCMD}`,
+      name: 'site-server',
+      max_restarts: 0,
+      node_args: '--no-autorestart',
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      try {
+        pm2.connect(function (err) {
+          if (err) {
+            throw err
+          }
+          pm2.start(options, (err, apps) => {
+            if (err) {
+              throw err
+            }
+            pm2.disconnect()
+            resolve()
+          })
+        })
+      } catch (error) {
+        console.log('threw an error: ', error)
+        reject()
+      }
+    })
   }
 
-  const test = () => {
-    console.log('this is a message from the server.ts module')
-    console.log('')
+  const startStaticPMServer = async () => {
+    const options: pm2.StartOptions = {
+      script: `serve`,
+      name: 'site-server',
+      max_restarts: 0,
+      env: {
+        PM2_SERVE_PATH: process.cwd(),
+        PM2_SERVE_PORT: '3000',
+        PM2_SERVE_HOMEPAGE: './index.html',
+      },
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      try {
+        pm2.connect(function (err) {
+          if (err) {
+            throw err
+          }
+          pm2.start(options, (err, apps) => {
+            if (err) {
+              throw err
+            }
+            pm2.disconnect()
+            resolve()
+          })
+        })
+      } catch (error) {
+        console.log('threw an error: ', error)
+        reject()
+      }
+    })
+  }
+
+  const stopPMServer = () => {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        pm2.delete('site-server', (err, proc) => {
+          if (err) {
+            console.log(err)
+            process.exit(2)
+          }
+          resolve()
+        })
+      } catch (error) {
+        pm2.disconnect()
+        reject()
+      }
+    })
   }
 
   return {
-    initServer,
-    test,
+    startPMServer,
+    startStaticPMServer,
+    stopPMServer,
   }
 })()

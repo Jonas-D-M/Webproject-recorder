@@ -2,22 +2,83 @@ name: Project build
 on:
   push:
     branches:
-      - feature/convert-to-javascript-action
+      - master
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: build the action
         run: |
           npm ci
           npm run build
-      - name: Commit and push build
+      - name: Versioning
+        uses: paulhatch/semantic-version@v4.0.2
+        with:
+          # The prefix to use to identify tags
+          tag_prefix: 'v'
+          # A string which, if present in a git commit, indicates that a change represents a
+          # major (breaking) change, supports regular expressions wrapped with '/'
+          major_pattern: '(MAJOR)'
+          # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
+          minor_pattern: '(MINOR)'
+          # A string to determine the format of the version output
+          format: '${major}.${minor}.${patch}-prerelease${increment}'
+          # Optional path to check for changes. If any changes are detected in the path the
+          # 'changed' output will true. Enter multiple paths separated by spaces.
+          change_path: 'dist/'
+          # Named version, will be used as suffix for name version tag
+          # Indicate whether short tags like 'v1' should be supported. If false only full
+          # tags like 'v1.0.0' will be recognized.
+          short_tags: true
+          # If this is set to true, *every* commit will be treated as a new version.
+          bump_each_commit: false
+      - name: Create Release
+        id: create_release
         continue-on-error: true
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.ref}}
+          release_name: Release ${{github.ref}}
+          body: |
+            ${{steps.Changelog.outputs.changelog}}
+            draft: false
+            prerelease: false
+      - name: Commit and push build
         run: |
           git config --global user.name 'Workflow-Builder'
           git config --global user.email 'your-username@users.noreply.github.com'
           git add .
-          git commit -am "Generated new build"
+          git commit -am "Generated new build" || echo "No changes to commit"
           git push
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{github.ref == 'refs/heads/develop'}}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: install ffmpeg
+        run: |
+          sudo apt-get install --no-upgrade ffmpeg
+      - name: get ffmpeg  path
+        id: get-ffmpeg-path
+        run: echo "::set-output name=ffmpeg::$(which ffmpeg)"
+      - name: get chrome path
+        id: get-chrome-path
+        run: echo "::set-output name=chrome::$(which google-chrome-stable)"
+      - name: test the github action
+        uses: ./
+        with:
+          ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
+          chrome-path: ${{steps.get-chrome-path.outputs.chrome}}

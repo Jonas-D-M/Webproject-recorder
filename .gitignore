@@ -1,2 +1,8 @@
 node_modules
-dist/
+lib/
+tmp/
+test/
+test2/
+video/
+service-account.json
+.env

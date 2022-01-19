@@ -46,7 +46,7 @@ jobs:
       - name: change dir
         run: cd static
       - name: test the github action
-        uses: .
+        uses: ./
         with:
           ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}

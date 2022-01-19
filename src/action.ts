@@ -5,12 +5,11 @@ import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
 // import { config } from 'dotenv'
 ;(async () => {
+  // config()
+  const { startPMServer, startStaticPMServer, stopPMServer } = server
+  const { recordLocalServer } = puppeteer
+  const { uploadFileToFirebase } = firebase
   try {
-    // config()
-    const { startPMServer, startStaticPMServer, stopPMServer } = server
-    const { recordLocalServer } = puppeteer
-    const { uploadFileToFirebase } = firebase
-
     // General vars
     const env = process.argv[2] || 'dev'
     console.log('The process env: ', env)
@@ -82,7 +81,7 @@ import firebase from './firebase'
     core.endGroup()
   } catch (error: any) {
     console.log('threw an error: ', error)
-
+    await stopPMServer()
     core.setFailed(error)
   }
 })()

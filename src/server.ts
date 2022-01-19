@@ -31,14 +31,12 @@ export default (() => {
   }
 
   const startStaticPMServer = async () => {
-    console.log('PM2_SERVE_PATH:', process.cwd())
-
     const options: pm2.StartOptions = {
       script: `serve`,
       name: 'site-server',
       max_restarts: 0,
       env: {
-        PM2_SERVE_PATH: process.cwd(),
+        PM2_SERVE_PATH: `${process.cwd()}/`,
         PM2_SERVE_PORT: '3000',
         PM2_SERVE_HOMEPAGE: './index.html',
       },
@@ -46,18 +44,19 @@ export default (() => {
 
     return new Promise<void>((resolve, reject) => {
       try {
-        console.log(pm2)
-
         pm2.connect(function (err) {
           if (err) {
             console.log('cant connect to pm2')
             throw err
           }
+          console.log('connected to pm2')
 
           pm2.start(options, (err, apps) => {
             if (err) {
               throw err
             }
+            console.log('started pm2')
+
             pm2.disconnect()
             resolve()
           })

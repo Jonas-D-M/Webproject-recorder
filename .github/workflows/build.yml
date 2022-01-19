@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: Nobilus/Tobbedansen-2020
-          path: './static'
+          path: ./static
       - name: install ffmpeg
         run: |
           sudo apt-get install --no-upgrade ffmpeg
@@ -44,7 +44,7 @@ jobs:
       - name: change dir
         run: cd static
       - name: test the github action
-        uses: ../dist
+        uses: ./dist/
         with:
           ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}

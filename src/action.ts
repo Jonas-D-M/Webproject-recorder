@@ -3,6 +3,7 @@ import puppeteer from './puppeteer'
 import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
+import pm2 from 'pm2'
 // import { config } from 'dotenv'
 ;(async () => {
   // config()
@@ -31,6 +32,7 @@ import firebase from './firebase'
       )
       console.info('running commands')
       await startPMServer(buildCMD, startCMD)
+
       core.endGroup()
 
       console.info('starting server')
@@ -60,6 +62,16 @@ import firebase from './firebase'
       ]
       console.info('starting static server')
       await startStaticPMServer()
+      pm2.connect(function (err) {
+        if (err) {
+          process.exit(2)
+        }
+        pm2.list((err, list) => {
+          console.log(err, list)
+          pm2.disconnect()
+        })
+      })
+
       core.endGroup()
       core.startGroup('Creating recording...')
       await recordLocalServer(ffmpegPath, chromePath, sitemap, true)

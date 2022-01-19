@@ -3,10 +3,10 @@ import puppeteer from './puppeteer'
 import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
-import { config } from 'dotenv'
+// import { config } from 'dotenv'
 ;(async () => {
   try {
-    config()
+    // config()
     const { startPMServer, startStaticPMServer, stopPMServer } = server
     const { recordLocalServer } = puppeteer
     const { uploadFileToFirebase } = firebase
@@ -81,7 +81,7 @@ import { config } from 'dotenv'
     console.log(url)
     core.endGroup()
   } catch (error: any) {
-    console.log(error)
+    console.log('threw an error: ', error)
 
     core.setFailed(error)
   }

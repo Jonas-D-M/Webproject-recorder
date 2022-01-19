@@ -36,7 +36,7 @@ export default (() => {
       name: 'site-server',
       max_restarts: 0,
       env: {
-        PM2_SERVE_PATH: './',
+        PM2_SERVE_PATH: process.cwd(),
         PM2_SERVE_PORT: '3000',
         PM2_SERVE_HOMEPAGE: './index.html',
       },
@@ -46,8 +46,10 @@ export default (() => {
       try {
         pm2.connect(function (err) {
           if (err) {
+            console.log('cant connect to pm2')
             throw err
           }
+
           pm2.start(options, (err, apps) => {
             if (err) {
               throw err

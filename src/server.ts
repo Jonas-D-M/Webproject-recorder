@@ -46,8 +46,10 @@ export default (() => {
       try {
         pm2.connect(function (err) {
           if (err) {
+            console.log('cant connect to pm2')
             throw err
           }
+
           pm2.start(options, (err, apps) => {
             if (err) {
               throw err

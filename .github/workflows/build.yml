@@ -45,6 +45,7 @@ jobs:
         run: ls -a
       - name: change dir
         run: cd static
+
       - name: test the github action
         uses: ./
         with:

@@ -20,7 +20,8 @@ import pm2 from 'pm2'
       env !== 'dev'
         ? core.getInput('chrome-path')
         : '/usr/bin/google-chrome-stable'
-    const projectDir = '.'
+
+    const projectDir = core.getInput('project-dir')
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -61,7 +62,7 @@ import pm2 from 'pm2'
         '/contact',
       ]
       console.info('starting static server')
-      await startStaticPMServer()
+      await startStaticPMServer(projectDir)
       pm2.connect(function (err) {
         if (err) {
           process.exit(2)

@@ -30,9 +30,9 @@ export default (() => {
     })
   }
 
-  const startStaticPMServer = async () => {
+  const startStaticPMServer = async (projectDir: string) => {
     const options: pm2.StartOptions = {
-      script: `serve`,
+      script: `${'cd ' + projectDir}serve`,
       name: 'site-server',
       max_restarts: 0,
       env: {

@@ -50,3 +50,4 @@ jobs:
         with:
           ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}
+          project-dir: ./static

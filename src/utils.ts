@@ -67,7 +67,8 @@ export const retry = (fn: any, ms: number) =>
   new Promise(resolve => {
     fn()
       .then(resolve)
-      .catch(() => {
+      .catch((e: any) => {
+        console.log(e)
         setTimeout(() => {
           console.log('retrying...')
           retry(fn, ms).then(resolve)

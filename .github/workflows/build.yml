@@ -51,11 +51,11 @@ jobs:
           echo BUCKET=$BUCKET >> ./.env
         shell: bash
         env:
-          CREDENTIALS_FILE: ${{secrets.GCP_CREDENTIALS}}
-          BUCKET: ${{secrets.BUCKET}}
+          CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
+          BUCKET: ${{ secrets.BUCKET }}
       - name: test the github action
         uses: ./
         with:
-          ffmpeg-path: ${{ steps.get-ffmpeg-path.outputs.ffmpeg}}
+          ffmpeg-path: ${{steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}
           project-dir: ./static

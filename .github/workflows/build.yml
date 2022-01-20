@@ -10,12 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: build the action
-        run: |
-          npm ci
-          npm run build
       - name: Set env variables
         run: |
           echo $CREDENTIALS_FILE >> ./service-account.json
@@ -24,6 +18,10 @@ jobs:
         env:
           CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
           BUCKET: ${{ secrets.BUCKET }}
+      - name: build the action
+        run: |
+          npm ci
+          npm run build
       - name: Commit and push build
         run: |
           git config --global user.name 'Workflow-Builder'
@@ -63,4 +61,3 @@ jobs:
           ffmpeg-path: ${{steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}
           project-dir: ./static
-          service-account: ${{secrets.GCP_CREDENTIALS}}

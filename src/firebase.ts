@@ -1,5 +1,6 @@
 import firebaseAdmin, { ServiceAccount } from 'firebase-admin'
 const { v4: uuidv4 } = require('uuid')
+//@ts-ignore
 import serviceAccount from '../service-account.json'
 import { config } from 'dotenv'
 

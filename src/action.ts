@@ -4,9 +4,7 @@ import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
 import pm2 from 'pm2'
-import { config } from 'dotenv'
 ;(async () => {
-  config()
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
   const { uploadFileToFirebase } = firebase
@@ -22,7 +20,6 @@ import { config } from 'dotenv'
         : '/usr/bin/google-chrome-stable'
 
     const projectDir = core.getInput('project-dir')
-    const serviceAccount = JSON.parse(core.getInput('service-account'))
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -82,14 +79,7 @@ import { config } from 'dotenv'
     console.info('stopping server')
     await stopPMServer()
     core.startGroup('Uploading video to firebase...')
-    // const serviceAccount = JSON.parse(require('../service-account.json'))
-    console.log(serviceAccount)
-
-    const bucket = process.env.BUCKET || ''
-
     const url = await uploadFileToFirebase(
-      serviceAccount,
-      bucket,
       './video/showcase-video.mp4',
       'showcase-video',
     )

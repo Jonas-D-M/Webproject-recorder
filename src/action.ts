@@ -22,6 +22,7 @@ import { config } from 'dotenv'
         : '/usr/bin/google-chrome-stable'
 
     const projectDir = core.getInput('project-dir')
+    const serviceAccount = JSON.parse(core.getInput('service-account'))
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -81,7 +82,7 @@ import { config } from 'dotenv'
     console.info('stopping server')
     await stopPMServer()
     core.startGroup('Uploading video to firebase...')
-    const serviceAccount = JSON.parse(require('../service-account.json'))
+    // const serviceAccount = JSON.parse(require('../service-account.json'))
     console.log(serviceAccount)
 
     const bucket = process.env.BUCKET || ''

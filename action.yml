@@ -10,6 +10,9 @@ inputs:
     required: true
   project-dir:
     description: 'Path to the project'
+  service-account:
+    description: 'Firebase service account'
+    required: true
 
 runs:
   using: 'node16'

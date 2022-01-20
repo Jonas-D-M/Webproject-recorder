@@ -25,11 +25,9 @@ jobs:
           git push
       - name: Set env variables
         run: |
-          echo $CREDENTIALS_FILE >> ./service-account.json
           echo BUCKET=$BUCKET >> ./.env
         shell: bash
         env:
-          CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
           BUCKET: ${{ secrets.BUCKET }}
       - name: Checkout static html site
         uses: actions/checkout@v2
@@ -62,3 +60,4 @@ jobs:
           ffmpeg-path: ${{steps.get-ffmpeg-path.outputs.ffmpeg}}
           chrome-path: ${{steps.get-chrome-path.outputs.chrome}}
           project-dir: ./static
+          service-account: ${{secrets.GCP_CREDENTIALS}}

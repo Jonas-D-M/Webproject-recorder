@@ -78,12 +78,6 @@ import pm2 from 'pm2'
     }
     console.info('stopping server')
     await stopPMServer()
-    core.startGroup('Uploading video to firebase...')
-    const url = await uploadFileToFirebase(
-      './video/showcase-video.mp4',
-      'showcase-video',
-    )
-    console.log(url)
     core.endGroup()
   } catch (error: any) {
     console.log('threw an error: ', error)

@@ -81,7 +81,7 @@ import pm2 from 'pm2'
     console.info('stopping server')
     await stopPMServer()
     core.startGroup('Uploading video to firebase...')
-    const serviceAccount = require('../service-account.json')
+    const serviceAccount = JSON.parse(require('../service-account.json'))
     const bucket = process.env.BUCKET || ''
 
     const url = await uploadFileToFirebase(

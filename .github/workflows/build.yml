@@ -30,7 +30,7 @@ jobs:
           path: ./static
       - name: install ffmpeg
         run: |
-          sudo apt-get install --no-upgrade ffmpeg
+          sudo apt-get install --no-install-recommends ffmpeg
       - name: install pm2
         run: npm install pm2@latest -g
       - name: install pm2 typescript

@@ -10,14 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set env variables
-        run: |
-          echo $CREDENTIALS_FILE >> ./service-account.json
-          echo BUCKET=$BUCKET >> ./.env
-        shell: bash
-        env:
-          CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
-          BUCKET: ${{ secrets.BUCKET }}
       - name: build the action
         run: |
           npm ci

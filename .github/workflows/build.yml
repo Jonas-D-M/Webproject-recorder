@@ -23,6 +23,14 @@ jobs:
           git add .
           git commit -am "Generated new build" || echo "No changes to commit"
           git push
+      - name: Set env variables
+        run: |
+          echo $CREDENTIALS_FILE >> ./service-account.json
+          echo BUCKET=$BUCKET >> ./.env
+        shell: bash
+        env:
+          CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
+          BUCKET: ${{ secrets.BUCKET }}
       - name: Checkout static html site
         uses: actions/checkout@v2
         with:
@@ -45,14 +53,7 @@ jobs:
         run: ls -a
       - name: change dir
         run: cd static
-      - name: Set env variables
-        run: |
-          echo $CREDENTIALS_FILE >> ./service-account.json
-          echo BUCKET=$BUCKET >> ./.env
-        shell: bash
-        env:
-          CREDENTIALS_FILE: ${{ secrets.GCP_CREDENTIALS }}
-          BUCKET: ${{ secrets.BUCKET }}
+
       - name: test the github action
         uses: ./
         with:

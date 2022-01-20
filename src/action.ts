@@ -62,7 +62,7 @@ import pm2 from 'pm2'
         '/contact',
       ]
       console.info('starting static server')
-      await startStaticPMServer(projectDir)
+      await startStaticPMServer()
       pm2.connect(function (err) {
         if (err) {
           process.exit(2)

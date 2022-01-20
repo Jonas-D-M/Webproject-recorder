@@ -10,40 +10,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: build the action
+      - name: install dependencies
         run: |
           npm ci
-          npm run build
-      - name: Commit and push build
-        run: |
-          git config --global user.name 'Workflow-Builder'
-          git config --global user.email 'your-username@users.noreply.github.com'
-          git add .
-          git commit -am "Generated new build" || echo "No changes to commit"
-          git push
+          npm run build:dev
 
       - name: Checkout static html site
         uses: actions/checkout@v2
         with:
           repository: Nobilus/Tobbedansen-2020
           path: ./static
+
       - name: install ffmpeg
         run: |
-          sudo apt-get install --no-install-recommends ffmpeg
+          sudo apt-get -qq --no-install-recommends install ffmpeg
+
       - name: install pm2
         run: npm install pm2@latest -g
+
       - name: install pm2 typescript
         run: pm2 install typescript
+
       - name: get ffmpeg  path
         id: get-ffmpeg-path
         run: echo "::set-output name=ffmpeg::$(which ffmpeg)"
+
       - name: get chrome path
         id: get-chrome-path
         run: echo "::set-output name=chrome::$(which google-chrome-stable)"
-      - name: list dir
-        run: |
-          ls -a
-          cat service-account.json
+
       - name: change dir
         run: cd static
 

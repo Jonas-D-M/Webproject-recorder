@@ -50,7 +50,9 @@ jobs:
         id: get-chrome-path
         run: echo "::set-output name=chrome::$(which google-chrome-stable)"
       - name: list dir
-        run: ls -a
+        run: |
+          ls -a
+          cat service-account.json
       - name: change dir
         run: cd static
 

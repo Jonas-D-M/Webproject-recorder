@@ -4,9 +4,9 @@ import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
 import pm2 from 'pm2'
-// import { config } from 'dotenv'
+import { config } from 'dotenv'
 ;(async () => {
-  // config()
+  config()
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
   const { uploadFileToFirebase } = firebase

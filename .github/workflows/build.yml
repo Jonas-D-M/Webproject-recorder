@@ -50,7 +50,6 @@ jobs:
       - name: list dir
         run: |
           ls -a
-          cat service-account.json
       - name: change dir
         run: cd static
 

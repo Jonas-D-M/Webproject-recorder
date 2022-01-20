@@ -82,6 +82,8 @@ import { config } from 'dotenv'
     await stopPMServer()
     core.startGroup('Uploading video to firebase...')
     const serviceAccount = JSON.parse(require('../service-account.json'))
+    console.log(serviceAccount)
+
     const bucket = process.env.BUCKET || ''
 
     const url = await uploadFileToFirebase(

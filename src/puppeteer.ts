@@ -154,10 +154,14 @@ export default (() => {
     return new Promise<void>((resolve, reject) => {
       try {
         const videoName = vidName ?? 'showcase-video.mp4'
+
         let mergedVideo = fluent_ffmpeg()
 
         const tmpDirPath = path.join(process.cwd(), 'tmpvid')
         const finalDirPath = path.join(process.cwd(), 'video')
+        const showcaseVidPath = `${process.cwd()}/video/${videoName}`
+
+        fs.promises.mkdir(path.dirname(showcaseVidPath), { recursive: true })
 
         const tmpVideos = fs
           .readdirSync(tmpDirPath)
@@ -168,9 +172,9 @@ export default (() => {
         tmpVideos.forEach(vid => {
           mergedVideo = mergedVideo.addInput(vid)
         })
-
+        // create file if not exists
         mergedVideo
-          .mergeToFile(`${finalDirPath}/${videoName}`)
+          .mergeToFile(showcaseVidPath)
           .on('error', err => {
             throw err
           })

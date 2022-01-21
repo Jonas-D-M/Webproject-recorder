@@ -68,5 +68,6 @@ import { findNPMCommands, findPackageJson } from './utils'
     console.log('threw an error: ', error)
     await stopPMServer()
     core.setFailed(error)
+    process.exit(1)
   }
 })()

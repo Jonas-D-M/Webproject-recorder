@@ -7,7 +7,6 @@ import pm2 from 'pm2'
 ;(async () => {
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
-  const { uploadFileToFirebase } = firebase
   try {
     // General vars
     const env = process.argv[2] || 'dev'

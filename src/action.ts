@@ -78,6 +78,7 @@ import pm2 from 'pm2'
     console.info('stopping server')
     await stopPMServer()
     core.endGroup()
+    process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
     await stopPMServer()

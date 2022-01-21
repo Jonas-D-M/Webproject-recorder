@@ -21,10 +21,6 @@ jobs:
           repository: Nobilus/Tobbedansen-2020
           path: ./static
 
-      - name: install ffmpeg
-        run: |
-          sudo apt-get -qq --no-install-recommends install ffmpeg
-
       - name: install pm2
         run: npm install pm2@latest -g
 

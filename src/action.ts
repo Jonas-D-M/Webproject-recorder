@@ -13,7 +13,7 @@ import { findNPMCommands, findPackageJson } from './utils'
 
     await exec('npm install pm2 -g')
     await exec('pm2 install typescript')
-    await exec('apt install ffmpeg')
+    await exec('sudo apt install ffmpeg')
 
     // General vars
     const chromePath = stdout.trim()

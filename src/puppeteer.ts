@@ -1,5 +1,5 @@
 import puppeteer, { Browser, Page } from 'puppeteer'
-import { PuppeteerScreenRecorder } from './puppeteerRecorder'
+import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'

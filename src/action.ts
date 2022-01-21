@@ -13,6 +13,7 @@ import { findNPMCommands, findPackageJson } from './utils'
 
     // install pm2 globally
     await exec('npm install pm2 -g')
+    await exec('pm2 install typescript')
 
     // General vars
     const chromePath = stdout.trim()

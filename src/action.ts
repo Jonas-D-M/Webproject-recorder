@@ -8,7 +8,11 @@ import { findNPMCommands, findPackageJson } from './utils'
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
   try {
+    // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
+
+    // install pm2 globally
+    await exec('npm install pm2 -g')
 
     // General vars
     const chromePath = stdout.trim()

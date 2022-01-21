@@ -4,12 +4,9 @@ import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
 import firebase from './firebase'
 import pm2 from 'pm2'
-// import { config } from 'dotenv'
 ;(async () => {
-  // config()
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
-  const { uploadFileToFirebase } = firebase
   try {
     // General vars
     const env = process.argv[2] || 'dev'
@@ -20,7 +17,8 @@ import pm2 from 'pm2'
       env !== 'dev'
         ? core.getInput('chrome-path')
         : '/usr/bin/google-chrome-stable'
-    const projectDir = '.'
+
+    const projectDir = core.getInput('project-dir')
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -79,18 +77,8 @@ import pm2 from 'pm2'
     }
     console.info('stopping server')
     await stopPMServer()
-    core.startGroup('Uploading video to firebase...')
-    const serviceAccount = require('../service-account.json')
-    const bucket = process.env.BUCKET || ''
-
-    const url = await uploadFileToFirebase(
-      serviceAccount,
-      bucket,
-      './video/showcase-video.mp4',
-      'showcase-video',
-    )
-    console.log(url)
     core.endGroup()
+    process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
     await stopPMServer()

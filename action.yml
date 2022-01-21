@@ -8,6 +8,8 @@ inputs:
   chrome-path:
     description: 'Path to chrome installation'
     required: true
+  project-dir:
+    description: 'Path to the project'
 
 runs:
   using: 'node16'

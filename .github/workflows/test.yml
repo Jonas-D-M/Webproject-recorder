@@ -21,12 +21,6 @@ jobs:
           repository: Nobilus/Tobbedansen-2020
           path: ./static
 
-      - name: install pm2
-        run: npm install pm2@latest -g
-
-      - name: install pm2 typescript
-        run: pm2 install typescript
-
       - name: get ffmpeg  path
         id: get-ffmpeg-path
         run: echo "::set-output name=ffmpeg::$(which ffmpeg)"

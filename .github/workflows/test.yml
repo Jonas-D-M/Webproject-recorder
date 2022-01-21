@@ -21,10 +21,6 @@ jobs:
           repository: Nobilus/Tobbedansen-2020
           path: ./static
 
-      - name: get ffmpeg  path
-        id: get-ffmpeg-path
-        run: echo "::set-output name=ffmpeg::$(which ffmpeg)"
-
       - name: get chrome path
         id: get-chrome-path
         run: echo "::set-output name=chrome::$(which google-chrome-stable)"

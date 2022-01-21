@@ -1,16 +1,17 @@
 import * as core from '@actions/core'
+import { promisify } from 'util'
+const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
 import { findNPMCommands, findPackageJson } from './utils'
-import firebase from './firebase'
-import pm2 from 'pm2'
 ;(async () => {
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer } = puppeteer
   try {
+    const { stdout } = await exec('which google-chrome-stable')
+
     // General vars
-    const chromePath =
-      core.getInput('chrome-path') ?? '/usr/bin/google-chrome-stable'
+    const chromePath = stdout.trim()
     const projectDir = core.getInput('project-dir') ?? '.'
 
     core.startGroup('Searching package.json...')
@@ -54,16 +55,6 @@ import pm2 from 'pm2'
       ]
       console.info('starting static server')
       await startStaticPMServer()
-      pm2.connect(function (err) {
-        if (err) {
-          process.exit(2)
-        }
-        pm2.list((err, list) => {
-          console.log(err, list)
-          pm2.disconnect()
-        })
-      })
-
       core.endGroup()
       core.startGroup('Creating recording...')
       await recordLocalServer(chromePath, sitemap, true)

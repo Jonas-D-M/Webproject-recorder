@@ -21,18 +21,12 @@ jobs:
           repository: Nobilus/Tobbedansen-2020
           path: ./static
 
-      - name: get chrome path
-        id: get-chrome-path
-        run: echo "::set-output name=chrome::$(which google-chrome-stable)"
-
       - name: change dir
         run: cd static
 
       - name: test the github action
         uses: ./
         with:
-          ffmpeg-path: ${{steps.get-ffmpeg-path.outputs.ffmpeg}}
-          chrome-path: ${{steps.get-chrome-path.outputs.chrome}}
           project-dir: ./static
 
       - name: update version number

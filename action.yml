@@ -2,9 +2,6 @@ name: 'Research Project Action'
 description: 'Create videos from webprojects'
 author: 'Jonas De Meyer'
 inputs:
-  chrome-path:
-    description: 'Path to chrome installation'
-    required: true
   project-dir:
     description: 'Path to the project'
 

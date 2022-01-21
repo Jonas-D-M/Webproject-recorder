@@ -11,9 +11,9 @@ import { findNPMCommands, findPackageJson } from './utils'
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 
-    // install pm2 globally
     await exec('npm install pm2 -g')
     await exec('pm2 install typescript')
+    await exec('apt install ffmpeg')
 
     // General vars
     const chromePath = stdout.trim()

@@ -9,20 +9,14 @@ import pm2 from 'pm2'
   const { recordLocalServer } = puppeteer
   try {
     // General vars
-    const env = process.argv[2] || 'dev'
-    console.log('The process env: ', env)
-    const ffmpegPath =
-      env !== 'dev' ? core.getInput('ffmpeg-path') : '/usr/bin/ffmpeg'
     const chromePath =
-      env !== 'dev'
-        ? core.getInput('chrome-path')
-        : '/usr/bin/google-chrome-stable'
-
-    const projectDir = core.getInput('project-dir')
+      core.getInput('chrome-path') ?? '/usr/bin/google-chrome-stable'
+    const projectDir = core.getInput('project-dir') ?? '.'
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
     core.endGroup()
+
     if (hasPackageJson) {
       core.startGroup('Starting local server...')
       const { buildCMD, startCMD } = findNPMCommands(
@@ -43,7 +37,7 @@ import pm2 from 'pm2'
         '/nieuws',
       ]
       core.startGroup('Creating recording...')
-      await recordLocalServer(ffmpegPath, chromePath, sitemap)
+      await recordLocalServer(chromePath, sitemap)
       core.endGroup()
     } else {
       core.notice('No package.json found, handling it as a regular HTML site')
@@ -72,7 +66,7 @@ import pm2 from 'pm2'
 
       core.endGroup()
       core.startGroup('Creating recording...')
-      await recordLocalServer(ffmpegPath, chromePath, sitemap, true)
+      await recordLocalServer(chromePath, sitemap, true)
       core.endGroup()
     }
     console.info('stopping server')

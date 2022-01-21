@@ -67,13 +67,12 @@ export default (() => {
     })
   }
 
-  const initRecorder = async (page: puppeteer.Page, ffmpegPath: string) => {
+  const initRecorder = async (page: puppeteer.Page) => {
     return new Promise<PuppeteerScreenRecorder>((resolve, reject) => {
       try {
         const recordConfig = {
           followNewTab: false,
           fps: 60,
-          ffmpeg_Path: ffmpegPath,
           videoFrame: {
             width: 1920,
             height: 1080,
@@ -100,7 +99,6 @@ export default (() => {
   }
 
   const recordLocalServer = async (
-    ffmpegPath: string,
     executablePath: string,
     sitemap: Array<string>,
     isStatic = false,
@@ -112,7 +110,7 @@ export default (() => {
       const urlMap = generateUrlMap(sitemap, url, isStatic)
 
       console.info('Recording pages')
-      await recordMultiplePages(browser, ffmpegPath, urlMap)
+      await recordMultiplePages(browser, urlMap)
 
       console.info('Generating showcase video')
       await generateShowcaseVideo()
@@ -130,15 +128,11 @@ export default (() => {
     }
   }
 
-  const recordMultiplePages = (
-    browser: Browser,
-    ffmpegPath: string,
-    urlMap: Array<string>,
-  ) => {
+  const recordMultiplePages = (browser: Browser, urlMap: Array<string>) => {
     return new Promise<void>((resolve, reject) => {
       Promise.all(
         urlMap.map(async (url, i) => {
-          await recordPage(browser, ffmpegPath, url, i)
+          await recordPage(browser, url, i)
         }),
       )
         .then(values => {
@@ -194,19 +188,14 @@ export default (() => {
     return routes.map(route => `${baseUrl}${route}${isHTML ? '.html' : ''}`)
   }
 
-  const recordPage = (
-    browser: Browser,
-    ffmpegPath: string,
-    url: string,
-    index: number,
-  ) => {
+  const recordPage = (browser: Browser, url: string, index: number) => {
     return new Promise<void>(async (resolve, reject) => {
       const resolution = { width: 1920, height: 1080 }
       try {
         console.log('going to ', url)
         const page = await browser.newPage()
         await initViewport(page, resolution)
-        const recorder = await initRecorder(page, ffmpegPath)
+        const recorder = await initRecorder(page)
         await retry(() => page.goto(url, { waitUntil: 'networkidle0' }), 1000)
         await recorder.start(`./tmpvid/tmp-${index}.mp4`)
         await new Promise(resolve => setTimeout(resolve, 1000))
@@ -219,44 +208,7 @@ export default (() => {
     })
   }
 
-  const example = async (
-    ffmpegPath: string,
-    executablePath: string,
-    videoName?: string,
-  ) => {
-    const browser = await initBrowser(executablePath)
-    const url = 'https://github.com'
-    const resolution = { width: 1920, height: 1080 }
-    const savePath = `./video/${videoName ?? 'showcase.mp4'}`
-
-    const [page] = await browser.pages()
-
-    await initViewport(page, resolution)
-    const recorder = await initRecorder(page, ffmpegPath)
-    try {
-      console.info('Going to url')
-      await page.goto(url)
-
-      console.info('Waiting a second before scrolling down')
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      console.info('Scrolling to end of page')
-      await smoothAutoScroll(page)
-
-      console.info('Stopping recorder')
-      await recorder.stop()
-
-      console.info('Closing browser')
-      browser.close()
-    } catch (error) {
-      console.log(error)
-      recorder.stop()
-      browser.close()
-      throw error
-    }
-  }
-
-  return { example, recordLocalServer }
+  return { recordLocalServer }
 })()
 
 const smoothAutoScroll = async (page: Page) => {

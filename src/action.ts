@@ -3,27 +3,31 @@ import { promisify } from 'util'
 const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
+import timer from './timer'
 import { findNPMCommands, findPackageJson } from './utils'
 ;(async () => {
   const { startPMServer, startStaticPMServer, stopPMServer } = server
-  const { recordLocalServer } = puppeteer
+  const { recordLocalServer, getAllPages } = puppeteer
+  const { startTimer, stopTimer, getDuration } = timer
   try {
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 
-    await exec('npm install pm2 -g')
-    await exec('pm2 install typescript')
-    await exec('sudo apt install ffmpeg')
+    // await exec('npm install pm2 -g')
+    // await exec('pm2 install typescript')
+    // await exec('sudo apt install ffmpeg')
 
     // General vars
     const chromePath = stdout.trim()
-    const projectDir = core.getInput('project-dir') ?? '.'
+    const projectDir = 'test'
+    // const routes = core.getInput("sitemap")
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
     core.endGroup()
 
     if (hasPackageJson) {
+      startTimer()
       core.startGroup('Starting local server...')
       const { buildCMD, startCMD } = findNPMCommands(
         `${projectDir}/package.json`,
@@ -34,32 +38,20 @@ import { findNPMCommands, findPackageJson } from './utils'
       core.endGroup()
 
       console.info('starting server')
-      const sitemap = [
-        '/home',
-        '/afdelingen',
-        '/over-ons',
-        '/ons-team',
-        '/shop',
-        '/nieuws',
-      ]
+      const sitemap = await getAllPages(false)
+      console.log(sitemap)
+
       core.startGroup('Creating recording...')
-      await recordLocalServer(chromePath, sitemap)
+      await recordLocalServer(chromePath, sitemap, false)
       core.endGroup()
     } else {
+      startTimer()
       core.notice('No package.json found, handling it as a regular HTML site')
       core.startGroup('Creating local server...')
-      const sitemap = [
-        '/index',
-        '/vrijdag',
-        '/zaterdag',
-        '/info',
-        '/reglement',
-        '/sponsors',
-        '/inschrijvingen',
-        '/contact',
-      ]
+
       console.info('starting static server')
       await startStaticPMServer()
+      const sitemap = await getAllPages(true)
       core.endGroup()
       core.startGroup('Creating recording...')
       await recordLocalServer(chromePath, sitemap, true)
@@ -68,6 +60,9 @@ import { findNPMCommands, findPackageJson } from './utils'
     console.info('stopping server')
     await stopPMServer()
     core.endGroup()
+    stopTimer()
+    console.log(`duration: ${getDuration()}s`)
+
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)

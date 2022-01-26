@@ -1,9 +1,10 @@
-import puppeteer, { Browser, Page } from 'puppeteer'
+import puppeteer, { Browser, Page, Puppeteer } from 'puppeteer'
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'
 import { retry } from './utils'
+import { Cluster } from 'puppeteer-cluster'
 
 export default (() => {
   const initBrowser = async (executablePath: string) => {
@@ -44,8 +45,17 @@ export default (() => {
         '--password-store=basic',
         '--use-gl=swiftshader',
         '--use-mock-keychain',
+        '--start-maximized',
       ]
 
+      const viewport = {
+        deviceScaleFactor: 1,
+        hasTouch: false,
+        height: 1080,
+        isLandscape: true,
+        isMobile: false,
+        width: 1920,
+      }
       try {
         const browserConfig: puppeteer.LaunchOptions &
           puppeteer.BrowserLaunchArgumentOptions &
@@ -54,6 +64,7 @@ export default (() => {
           headless: true,
           ignoreHTTPSErrors: true,
           args: minimalArgs,
+          defaultViewport: viewport,
         }
         const browser = await puppeteer.launch(browserConfig)
         console.info(
@@ -67,17 +78,29 @@ export default (() => {
     })
   }
 
-  const initRecorder = async (page: puppeteer.Page) => {
-    return new Promise<PuppeteerScreenRecorder>((resolve, reject) => {
+  const initRecorder = (page: puppeteer.Page) => {
+    return new Promise<PuppeteerScreenRecorder>(async (resolve, reject) => {
       try {
+        const scrollDelay = 500
+        const duration = await page.evaluate(
+          scrollDelay =>
+            (((document.body.scrollHeight - 1080) / 100) * scrollDelay +
+              scrollDelay) /
+            1000,
+          scrollDelay,
+        )
+
+        console.log('the duration: ', duration)
+
         const recordConfig = {
           followNewTab: false,
-          fps: 60,
+          fps: 25,
           videoFrame: {
             width: 1920,
             height: 1080,
           },
           aspectRatio: '16:9',
+          recordDurationLimit: duration,
         }
         const recorder = new PuppeteerScreenRecorder(page, recordConfig)
         console.log(`init recorder`)
@@ -101,47 +124,65 @@ export default (() => {
   const recordLocalServer = async (
     executablePath: string,
     sitemap: Array<string>,
-    isStatic = false,
+    isStatic: boolean,
   ) => {
-    const browser = await initBrowser(executablePath)
     const url = 'http://127.0.0.1:3000'
-
+    const browser = await initBrowser(executablePath)
     try {
       const urlMap = generateUrlMap(sitemap, url, isStatic)
+      console.log(urlMap)
 
       console.info('Recording pages')
+
       await recordMultiplePages(browser, urlMap)
 
       console.info('Generating showcase video')
       await generateShowcaseVideo()
 
-      console.info('Closing browser')
-      await browser.close()
-
       console.info('Delete temp vid dir')
-
       fs.rmSync(path.join(process.cwd(), 'tmpvid'), { recursive: true })
     } catch (error) {
       console.log(error)
-      browser.close()
       throw error
+    } finally {
+      await browser.close()
     }
   }
 
-  const recordMultiplePages = (browser: Browser, urlMap: Array<string>) => {
-    return new Promise<void>((resolve, reject) => {
-      Promise.all(
-        urlMap.map(async (url, i) => {
-          await recordPage(browser, url, i)
-        }),
-      )
-        .then(values => {
-          console.log(values)
-
-          resolve()
-        })
-        .catch(err => reject(err))
+  const recordMultiplePages = async (
+    browser: Browser,
+    urlMap: Array<string>,
+  ) => {
+    const cluster = await Cluster.launch({
+      concurrency: Cluster.CONCURRENCY_BROWSER,
+      maxConcurrency: 3,
     })
+    try {
+      let index = 1
+      await cluster.task(async ({ page, data: url, worker }) => {
+        await recordPage(page, url, `${index}-${worker.id}`)
+        index++
+      })
+      cluster.on('taskerror', (err, data, willRetry) => {
+        if (willRetry) {
+          console.warn(
+            `Encountered an error while crawling ${data}. ${err.message}\nThis job will be retried`,
+          )
+        } else {
+          console.error(`Failed to crawl ${data}: ${err.message}`)
+        }
+      })
+      urlMap.forEach(url => {
+        console.log(url)
+
+        cluster.queue(url)
+      })
+    } catch (error) {
+      throw error
+    } finally {
+      await cluster.idle()
+      await cluster.close()
+    }
   }
 
   const generateShowcaseVideo = (vidName?: string) => {
@@ -188,34 +229,103 @@ export default (() => {
     return routes.map(route => `${baseUrl}${route}${isHTML ? '.html' : ''}`)
   }
 
-  const recordPage = (browser: Browser, url: string, index: number) => {
-    return new Promise<void>(async (resolve, reject) => {
-      const resolution = { width: 1920, height: 1080 }
+  const recordPage = async (page: Page, url: string, index: string) => {
+    // const [page] = await browser.pages()
+    const resolution = { width: 1920, height: 1080 }
+    await initViewport(page, resolution)
+    // await retry(() => page.goto(url, { waitUntil: 'load' }), 1000)
+    await page.goto(url, { waitUntil: 'load' })
+    const recorder = await initRecorder(page)
+    console.log('Starting recorder')
+    await recorder.start(`./tmpvid/tmp-${index}.mp4`)
+    console.log('autoscrolling')
+    await autoScroll(page)
+    console.log('autoscrolling stopped')
+    await recorder.stop()
+    console.log('recorder stopped')
+    await page.close()
+  }
+
+  const getAllPages = (isHtml: boolean) => {
+    return new Promise<Array<string>>(async (resolve, reject) => {
       try {
-        console.log('going to ', url)
+        const baseurl = `http://127.0.0.1:3000`
+
+        const browser = await initBrowser('/usr/bin/google-chrome-stable')
         const page = await browser.newPage()
-        await initViewport(page, resolution)
-        const recorder = await initRecorder(page)
-        await retry(() => page.goto(url, { waitUntil: 'networkidle0' }), 1000)
-        await recorder.start(`./tmpvid/tmp-${index}.mp4`)
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        await smoothAutoScroll(page)
-        await recorder.stop()
-        resolve()
+        await retry(
+          () =>
+            page.goto(`${baseurl}/index${isHtml ? '.html' : ''}`, {
+              waitUntil: 'networkidle0',
+            }),
+          1000,
+        )
+        const hrefs = [
+          ...new Set(
+            await page.evaluate(() =>
+              Array.from(document.getElementsByTagName('a'), links =>
+                links.href
+                  .replace('http://127.0.0.1:3000', '')
+                  .replace('#', '')
+                  .replace('.html', ''),
+              ),
+            ),
+          ),
+        ]
+        const filteredHrefs = hrefs.filter(href => !href.includes('http'))
+        resolve(filteredHrefs)
+        browser.close()
       } catch (error) {
         reject(error)
+        throw error
       }
     })
   }
 
-  return { recordLocalServer }
+  return { recordLocalServer, getAllPages }
 })()
 
+const smoothAutoScrollV2 = async (page: Page) => {
+  page.on('console', async msg => {
+    const msgArgs = msg.args()
+    for (let i = 0; i < msgArgs.length; ++i) {
+      console.log(await msgArgs[i].jsonValue())
+    }
+  })
+  await page.evaluate(async () => {
+    await new Promise<void>((resolve, reject) => {
+      try {
+        const totalHeight = document.body.scrollHeight
+        const viewport = window.innerHeight
+        let topP = 0
+        const timer = setInterval(() => {
+          window.scrollBy({ top: topP, behavior: 'smooth' })
+
+          topP = topP + viewport
+          if (topP >= totalHeight) {
+            clearInterval(timer)
+            resolve()
+          }
+        }, 1500)
+      } catch (error) {
+        reject(error)
+        throw error
+      }
+    })
+  })
+}
+
 const smoothAutoScroll = async (page: Page) => {
+  page.on('console', async msg => {
+    const msgArgs = msg.args()
+    for (let i = 0; i < msgArgs.length; ++i) {
+      console.log(await msgArgs[i].jsonValue())
+    }
+  })
   await page.evaluate(async () => {
     return new Promise<void>((resolve, reject) => {
       try {
-        let totalHeight = 1
+        let totalHeight = 0
         const docHeight = document.body.scrollHeight
         const delay = 1 //delay in milliseconds
 
@@ -223,7 +333,9 @@ const smoothAutoScroll = async (page: Page) => {
           window.scroll(0, totalHeight)
           totalHeight += 5
 
-          if (totalHeight >= docHeight) {
+          if (totalHeight > docHeight) {
+            console.log(totalHeight)
+
             clearInterval(timer)
             resolve()
           }
@@ -237,26 +349,33 @@ const smoothAutoScroll = async (page: Page) => {
 }
 
 const autoScroll = async (page: Page) => {
-  await page.evaluate(async () => {
-    return await new Promise<void>((resolve, reject) => {
-      try {
-        let totalHeight = 0
-        let distance = 100
+  await page.evaluate(
+    (recorder: PuppeteerScreenRecorder) =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          let totalHeight = 0
+          let distance = 100
+          let firstTime = true
+          const timer = setInterval(() => {
+            let scrollHeight = document.body.scrollHeight
+            if (totalHeight >= scrollHeight) {
+              console.log('clear interval')
+              clearInterval(timer)
+              console.log('interval cleared')
 
-        let timer = setInterval(() => {
-          let scrollHeight = document.body.scrollHeight
-          window.scrollBy(0, distance)
-          totalHeight += distance
-
-          if (totalHeight >= scrollHeight) {
-            clearInterval(timer)
-            resolve()
-          }
-        }, 200)
-      } catch (error) {
-        reject(error)
-        throw error
-      }
-    })
-  })
+              resolve()
+            }
+            if (!firstTime) {
+              window.scrollBy(0, distance)
+              totalHeight += distance
+            } else {
+              firstTime = false
+            }
+          }, 500)
+        } catch (error) {
+          reject(error)
+          throw error
+        }
+      }),
+  )
 }

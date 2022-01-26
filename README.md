@@ -5,12 +5,14 @@ Hoe kan je automatisch een screencapture maken van een portfolio website aan de 
 ## Deelvragen
 * Welke bestaande testing frameworks laten het toe om geautomatiseerd visueel te testen?
 * Is een Docker container action sneller of trager dan een JavaScript action of een composite action?
+
 * Hoe kan een Github vendor lock-in vermeden worden?
-* Hoe kunnen custom flows in geintegreerd worden? Bv. Het klikken van een knop
+* Hoe kunnen screenshots van bepaalde componenten uit een pagina in een markdownfile geplaatstworden?
 * Hoe definieer ik een geautomatiseerde interactie via een configfile?
+* Hoe kunnen custom flows in geintegreerd worden? Bv. Het klikken van een knop
+
 * Waar kunnen de gegenereerde video’s opgeslagen worden op een portfoliosite getoond worden?
 * Hoe kunnen bestaande/nieuwe/dynamic routes geintegreerd worden?
-* Hoe kunnen screenshots van bepaalde componenten uit een pagina in een markdownfile geplaatstworden?
 * Hoe kan een gegenereerde video in een mock-up geplaatst worden?
 * Hoe behandel ik websites die zonder framework geschreven zijn?
 * Hoe verlagen we de buildtime van het geautomatiseerd process?

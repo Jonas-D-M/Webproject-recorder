@@ -39,7 +39,7 @@ export default (() => {
       name: 'site-server',
       max_restarts: 0,
       env: {
-        PM2_SERVE_PATH: `${projectDir}/`,
+        PM2_SERVE_PATH: `${projectDir}`,
         // @ts-ignore
         PM2_SERVE_PORT: 3000,
         PM2_SERVE_HOMEPAGE: './index.html',

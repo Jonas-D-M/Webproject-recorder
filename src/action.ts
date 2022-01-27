@@ -76,7 +76,7 @@ export default (async () => {
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
-    // await stopPMServer()
+    await stopPMServer()
     core.setFailed(error)
     process.exit(1)
   }

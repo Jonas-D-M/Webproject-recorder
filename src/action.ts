@@ -59,7 +59,7 @@ export default (async () => {
 
       console.info('starting static server')
       await startStaticPMServer(projectDir)
-      await exec('pm2 logs site-server')
+
       const sitemap = await getAllPages(true, chromePath)
       core.endGroup()
       core.startGroup('Creating recording...')

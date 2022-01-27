@@ -1,26 +1,27 @@
 import * as core from '@actions/core'
 import { promisify } from 'util'
+import octokit from './octokit'
 const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
 import { findNPMCommands, findPackageJson } from './utils'
-;(async () => {
+
+export default (async () => {
   const { startPMServer, startStaticPMServer, stopPMServer } = server
   const { recordLocalServer, getAllPages } = puppeteer
   const { startTimer, stopTimer, getDuration } = timer
+  const { initOctokit, createCommit } = octokit
   try {
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 
-    // await exec('npm install pm2 -g')
-    // await exec('pm2 install typescript')
-    // await exec('sudo apt install ffmpeg')
-
-    // General vars
     const chromePath = stdout.trim()
-    const projectDir = 'test'
-    // const routes = core.getInput("sitemap")
+    const token = core.getInput('token')
+    const dir = core.getInput('project-dir')
+    initOctokit(token)
+
+    const projectDir = dir ?? 'test'
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -62,6 +63,8 @@ import { findNPMCommands, findPackageJson } from './utils'
     core.endGroup()
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
+
+    await createCommit()
 
     process.exit(0)
   } catch (error: any) {

@@ -2,11 +2,15 @@ name: 'Research Project Action'
 description: 'Create videos from webprojects'
 author: 'Jonas De Meyer'
 inputs:
+  token:
+    description: 'GitHub token'
+    required: true
   project-dir:
     description: 'Path to the project'
 
 runs:
   using: 'node16'
+  pre: 'dist/pre.js'
   main: 'dist/index.js'
 # branding:
 #   icon: "camera",

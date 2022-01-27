@@ -258,11 +258,18 @@ export default (() => {
       try {
         const baseurl = `http://127.0.0.1:3000`
 
+        let url = ''
+        if (isHtml) {
+          url = `${baseurl}/index.html`
+        } else {
+          url = `${baseurl}/index.html`
+        }
+
         const browser = await initBrowser(chromePath)
         const page = await browser.newPage()
         await retry(
           () =>
-            page.goto(`${baseurl}/index${isHtml ? '.html' : ''}`, {
+            page.goto(url, {
               waitUntil: 'networkidle0',
             }),
           1000,

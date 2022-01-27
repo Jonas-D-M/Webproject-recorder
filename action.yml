@@ -10,7 +10,7 @@ inputs:
 
 runs:
   using: 'node16'
-  pre: 'dist/pre.js'
+  pre: 'dist/pre/index.js'
   main: 'dist/index.js'
 # branding:
 #   icon: "camera",

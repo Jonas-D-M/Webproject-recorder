@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: install dependencies
+      - name: install dependencies and build code
         run: |
           npm ci
           npm run build:dev
@@ -22,7 +22,9 @@ jobs:
           path: ./static
 
       - name: change dir
-        run: cd static
+        run: |
+          cd static
+          ls
 
       - name: test the github action
         uses: ./

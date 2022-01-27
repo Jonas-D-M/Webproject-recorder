@@ -246,12 +246,14 @@ export default (() => {
     await page.close()
   }
 
-  const getAllPages = (isHtml: boolean) => {
+  const getAllPages = (isHtml: boolean, chromePath: string) => {
+    console.log('getting all the pages...')
+
     return new Promise<Array<string>>(async (resolve, reject) => {
       try {
         const baseurl = `http://127.0.0.1:3000`
 
-        const browser = await initBrowser('/usr/bin/google-chrome-stable')
+        const browser = await initBrowser(chromePath)
         const page = await browser.newPage()
         await retry(
           () =>

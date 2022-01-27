@@ -42,7 +42,7 @@ export default (async () => {
       core.endGroup()
 
       console.info('starting server')
-      const sitemap = await getAllPages(false)
+      const sitemap = await getAllPages(false, chromePath)
       console.log(sitemap)
 
       core.startGroup('Creating recording...')
@@ -55,7 +55,7 @@ export default (async () => {
 
       console.info('starting static server')
       await startStaticPMServer()
-      const sitemap = await getAllPages(true)
+      const sitemap = await getAllPages(true, chromePath)
       core.endGroup()
       core.startGroup('Creating recording...')
       await recordLocalServer(chromePath, sitemap, true)

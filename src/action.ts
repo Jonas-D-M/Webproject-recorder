@@ -13,6 +13,9 @@ export default (async () => {
   const { startTimer, stopTimer, getDuration } = timer
   const { initOctokit, createCommit } = octokit
   try {
+    await exec('npm install pm2 -g')
+    await exec('pm2 install typescript')
+    await exec('sudo apt install ffmpeg')
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 

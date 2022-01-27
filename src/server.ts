@@ -46,6 +46,8 @@ export default (() => {
       },
     }
 
+    console.info(options)
+
     return new Promise<void>((resolve, reject) => {
       try {
         pm2.connect(function (err) {

@@ -24,7 +24,7 @@ export default (async () => {
     const dir = core.getInput('project-dir')
     const octokit = initOctokit(token)
 
-    const projectDir = dir ?? 'test'
+    const projectDir = dir
 
     console.log('Projectdir: ', projectDir)
     console.log('token: ', token)

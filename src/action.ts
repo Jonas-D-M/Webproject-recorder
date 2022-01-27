@@ -58,6 +58,7 @@ export default (async () => {
       core.startGroup('Creating local server...')
 
       console.info('starting static server')
+      await exec('pm2 logs site-server')
       await startStaticPMServer(projectDir)
       const sitemap = await getAllPages(true, chromePath)
       core.endGroup()

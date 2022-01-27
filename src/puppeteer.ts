@@ -156,6 +156,7 @@ export default (() => {
     const cluster = await Cluster.launch({
       concurrency: Cluster.CONCURRENCY_BROWSER,
       maxConcurrency: 3,
+      puppeteer: browser,
     })
     try {
       let index = 1

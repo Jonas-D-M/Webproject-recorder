@@ -1,0 +1,36 @@
+name: Project build
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: install dependencies and build code
+        run: |
+          npm ci
+          npm run build:dev
+
+      - name: Checkout static html site
+        uses: actions/checkout@v2
+        with:
+          repository: Nobilus/Tobbedansen-2020
+          path: ./static
+
+      - name: change dir
+        run: |
+          cd static
+          ls
+
+      - name: test the github action
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          project-dir: ./static
+
+      - name: update version number
+        run: npm version minor

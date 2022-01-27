@@ -3,7 +3,7 @@ import pm2 from 'pm2'
 export default (() => {
   const startPMServer = async (buildCMD: string, startCMD: string) => {
     const options = {
-      script: `npm -- run ${startCMD}`,
+      script: `npm -- run start`,
       name: 'site-server',
       max_restarts: 0,
       node_args: '--no-autorestart',
@@ -15,10 +15,13 @@ export default (() => {
           if (err) {
             throw err
           }
+          console.log('connected to pm2')
           pm2.start(options, (err, apps) => {
             if (err) {
               throw err
             }
+            console.log('started server')
+
             pm2.disconnect()
             resolve()
           })
@@ -30,14 +33,14 @@ export default (() => {
     })
   }
 
-  const startStaticPMServer = async () => {
+  const startStaticPMServer = async (projectDir: string) => {
     const options: pm2.StartOptions = {
       script: `serve`,
       name: 'site-server',
       max_restarts: 0,
       env: {
-        PM2_SERVE_PATH: `./`,
-        //@ts-ignore
+        PM2_SERVE_PATH: `./${projectDir}`,
+        // @ts-ignore
         PM2_SERVE_PORT: 3000,
         PM2_SERVE_HOMEPAGE: './index.html',
       },

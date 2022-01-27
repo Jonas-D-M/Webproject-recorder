@@ -2,17 +2,15 @@ name: 'Research Project Action'
 description: 'Create videos from webprojects'
 author: 'Jonas De Meyer'
 inputs:
-  ffmpeg-path:
-    description: 'Path to ffmpeg installation'
-    required: true
-  chrome-path:
-    description: 'Path to chrome installation'
+  token:
+    description: 'GitHub token'
     required: true
   project-dir:
     description: 'Path to the project'
 
 runs:
   using: 'node16'
+  # pre: 'dist/pre/index.js'
   main: 'dist/index.js'
 # branding:
 #   icon: "camera",

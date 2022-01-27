@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/action.js -m -o dist --license licenses.txt",
-    "build:dev": "tsc && ncc build lib/action.js -d -o dist --license licenses.txt",
+    "build": "tsc && ncc build lib/action.js -m -o dist --license licenses.txt && ncc build lib/pre.js -m -o dist/pre --license licenses.txt",
+    "build:dev": "tsc && ncc build lib/action.js -d -o dist --license licenses.txt && ncc build lib/pre.js -o dist/pre --license licenses.txt",
     "dev": "npx nodemon --watch 'src/*' --exec 'ts-node' src/action.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Jonas-D-M/Research-Project#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0",
     "@actions/glob": "^0.2.0",
     "@vercel/ncc": "^0.33.1",
     "async": "^3.2.3",
@@ -30,6 +31,8 @@
     "node-static": "^0.7.11",
     "pm2": "^5.1.2",
     "puppeteer": "^13.0.1",
+    "puppeteer-cluster": "^0.23.0",
+    "puppeteer-screen-recorder": "^2.0.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

@@ -26,6 +26,10 @@ export default (async () => {
 
     const projectDir = dir ?? 'test'
 
+    console.log('Projectdir: ', projectDir)
+    console.log('token: ', token)
+    console.log('chromepath: ', chromePath)
+
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
     core.endGroup()

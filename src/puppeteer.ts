@@ -274,7 +274,11 @@ export default (() => {
             ),
           ),
         ]
+        console.log(hrefs)
+
         const filteredHrefs = hrefs.filter(href => !href.includes('http'))
+        console.log(filteredHrefs)
+
         resolve(filteredHrefs)
         browser.close()
       } catch (error) {

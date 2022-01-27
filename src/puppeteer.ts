@@ -265,12 +265,14 @@ export default (() => {
         const hrefs = [
           ...new Set(
             await page.evaluate(() =>
-              Array.from(document.getElementsByTagName('a'), links =>
-                links.href
+              Array.from(document.getElementsByTagName('a'), links => {
+                console.log(links)
+
+                return links.href
                   .replace('http://127.0.0.1:3000', '')
                   .replace('#', '')
-                  .replace('.html', ''),
-              ),
+                  .replace('.html', '')
+              }),
             ),
           ),
         ]

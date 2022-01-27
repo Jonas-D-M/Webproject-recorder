@@ -18,16 +18,16 @@ interface ICommit {
 }
 
 export default (() => {
-  let octoKit: Octokit &
-    Api & {
-      paginate: PaginateInterface
-    }
-
   const initOctokit = (token: string) => {
-    octoKit = github.getOctokit(token)
+    return github.getOctokit(token)
   }
 
-  const createCommit = async () => {
+  const createCommit = async (
+    octoKit: Octokit &
+      Api & {
+        paginate: PaginateInterface
+      },
+  ) => {
     // github.actor
     // github.repository_owner
     // github.repository

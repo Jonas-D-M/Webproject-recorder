@@ -22,7 +22,7 @@ export default (async () => {
     const chromePath = stdout.trim()
     const token = core.getInput('token')
     const dir = core.getInput('project-dir')
-    initOctokit(token)
+    const octokit = initOctokit(token)
 
     const projectDir = dir ?? 'test'
 
@@ -67,12 +67,12 @@ export default (async () => {
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    await createCommit()
+    await createCommit(octokit)
 
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
-    await stopPMServer()
+    // await stopPMServer()
     core.setFailed(error)
     process.exit(1)
   }

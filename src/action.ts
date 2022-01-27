@@ -59,6 +59,7 @@ export default (async () => {
 
       console.info('starting static server')
       await startStaticPMServer(projectDir)
+
       const sitemap = await getAllPages(true, chromePath)
       core.endGroup()
       core.startGroup('Creating recording...')

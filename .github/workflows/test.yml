@@ -27,7 +27,7 @@ jobs:
       - name: test the github action
         uses: ./
         with:
-          token: ${{github.token}}
+          token: ${{ secrets.GITHUB_TOKEN }}
           project-dir: ./static
 
       - name: update version number

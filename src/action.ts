@@ -26,9 +26,9 @@ export default (async () => {
 
     const projectDir = dir
 
-    console.log('Projectdir: ', projectDir)
-    console.log('token: ', token)
-    console.log('chromepath: ', chromePath)
+    console.info('Projectdir: ', projectDir)
+    console.info('token: ', token)
+    console.info('chromepath: ', chromePath)
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
@@ -76,7 +76,7 @@ export default (async () => {
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
-    // await stopPMServer()
+    await stopPMServer()
     core.setFailed(error)
     process.exit(1)
   }

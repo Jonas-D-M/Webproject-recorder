@@ -6,66 +6,68 @@ import fs from 'fs'
 import { retry } from './utils'
 import { Cluster } from 'puppeteer-cluster'
 
+const minimalArgs = [
+  '--autoplay-policy=user-gesture-required',
+  '--disable-background-networking',
+  '--disable-background-timer-throttling',
+  '--disable-backgrounding-occluded-windows',
+  '--disable-breakpad',
+  '--disable-client-side-phishing-detection',
+  '--disable-component-update',
+  '--disable-default-apps',
+  '--disable-dev-shm-usage',
+  '--disable-domain-reliability',
+  '--disable-extensions',
+  '--disable-features=AudioServiceOutOfProcess',
+  '--disable-hang-monitor',
+  '--disable-ipc-flooding-protection',
+  '--disable-notifications',
+  '--disable-offer-store-unmasked-wallet-cards',
+  '--disable-popup-blocking',
+  '--disable-print-preview',
+  '--disable-prompt-on-repost',
+  '--disable-renderer-backgrounding',
+  '--disable-setuid-sandbox',
+  '--disable-speech-api',
+  '--disable-sync',
+  '--hide-scrollbars',
+  '--ignore-gpu-blacklist',
+  '--metrics-recording-only',
+  '--mute-audio',
+  '--no-default-browser-check',
+  '--no-first-run',
+  '--no-pings',
+  '--no-sandbox',
+  '--no-zygote',
+  '--password-store=basic',
+  '--use-gl=swiftshader',
+  '--use-mock-keychain',
+  '--start-maximized',
+]
+
+const viewport = {
+  deviceScaleFactor: 1,
+  hasTouch: false,
+  height: 1080,
+  isLandscape: true,
+  isMobile: false,
+  width: 1920,
+}
+
+const browserConfig: puppeteer.LaunchOptions &
+  puppeteer.BrowserLaunchArgumentOptions &
+  puppeteer.BrowserConnectOptions = {
+  headless: true,
+  ignoreHTTPSErrors: true,
+  args: minimalArgs,
+  defaultViewport: viewport,
+}
+
 export default (() => {
   const initBrowser = async (executablePath: string) => {
     return new Promise<puppeteer.Browser>(async (resolve, reject) => {
-      const minimalArgs = [
-        '--autoplay-policy=user-gesture-required',
-        '--disable-background-networking',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-breakpad',
-        '--disable-client-side-phishing-detection',
-        '--disable-component-update',
-        '--disable-default-apps',
-        '--disable-dev-shm-usage',
-        '--disable-domain-reliability',
-        '--disable-extensions',
-        '--disable-features=AudioServiceOutOfProcess',
-        '--disable-hang-monitor',
-        '--disable-ipc-flooding-protection',
-        '--disable-notifications',
-        '--disable-offer-store-unmasked-wallet-cards',
-        '--disable-popup-blocking',
-        '--disable-print-preview',
-        '--disable-prompt-on-repost',
-        '--disable-renderer-backgrounding',
-        '--disable-setuid-sandbox',
-        '--disable-speech-api',
-        '--disable-sync',
-        '--hide-scrollbars',
-        '--ignore-gpu-blacklist',
-        '--metrics-recording-only',
-        '--mute-audio',
-        '--no-default-browser-check',
-        '--no-first-run',
-        '--no-pings',
-        '--no-sandbox',
-        '--no-zygote',
-        '--password-store=basic',
-        '--use-gl=swiftshader',
-        '--use-mock-keychain',
-        '--start-maximized',
-      ]
-
-      const viewport = {
-        deviceScaleFactor: 1,
-        hasTouch: false,
-        height: 1080,
-        isLandscape: true,
-        isMobile: false,
-        width: 1920,
-      }
       try {
-        const browserConfig: puppeteer.LaunchOptions &
-          puppeteer.BrowserLaunchArgumentOptions &
-          puppeteer.BrowserConnectOptions = {
-          executablePath,
-          headless: true,
-          ignoreHTTPSErrors: true,
-          args: minimalArgs,
-          defaultViewport: viewport,
-        }
+        browserConfig.executablePath = executablePath
         const browser = await puppeteer.launch(browserConfig)
         console.info(
           `Browser is running with process id ${browser.process()?.pid}`,
@@ -134,7 +136,7 @@ export default (() => {
 
       console.info('Recording pages')
 
-      await recordMultiplePages(browser, urlMap)
+      await recordMultiplePages(executablePath, urlMap)
 
       console.info('Generating showcase video')
       await generateShowcaseVideo()
@@ -150,13 +152,15 @@ export default (() => {
   }
 
   const recordMultiplePages = async (
-    browser: Browser,
+    executablePath: string,
     urlMap: Array<string>,
   ) => {
+    const browserconfig = browserConfig
+    browserconfig.executablePath = executablePath
     const cluster = await Cluster.launch({
       concurrency: Cluster.CONCURRENCY_BROWSER,
       maxConcurrency: 3,
-      puppeteer: browser,
+      puppeteerOptions: browserconfig,
     })
     try {
       let index = 1

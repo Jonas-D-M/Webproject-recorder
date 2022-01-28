@@ -64,7 +64,7 @@ export default (async () => {
       console.info('starting static server')
       // await startStaticPMServer(projectDir)
       console.log(projectDir)
-      await startServer(projectDir)
+      await startServer(process.cwd())
 
       const sitemap = await getAllPages(true, chromePath)
       core.endGroup()

@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
       - name: build the action
         run: |
-          npm ci
+          npm install
           npm run build
       - name: Update version number
         run: npm version major

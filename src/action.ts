@@ -15,7 +15,7 @@ export default (async () => {
     // await exec('npm install pm2 -g')
     // await exec('sudo pm2 update')
     // await exec('pm2 install typescript')
-    // await exec('sudo apt install ffmpeg')
+    await exec('sudo apt-get install ffmpeg')
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 

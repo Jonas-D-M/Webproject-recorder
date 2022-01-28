@@ -9,7 +9,8 @@ import timer from './timer'
 import { findNPMCommands, findPackageJson } from './utils'
 
 export default (async () => {
-  const { startPMServer, startStaticPMServer, stopPMServer } = server
+  const { startPMServer, startStaticPMServer, startServer, stopPMServer } =
+    server
   const { recordLocalServer, getAllPages } = puppeteer
   const { startTimer, stopTimer, getDuration } = timer
   const { initOctokit, createCommit } = octokit
@@ -23,14 +24,14 @@ export default (async () => {
 
     const chromePath = stdout.trim()
     const token = core.getInput('token')
-    const dir = core.getInput('project-dir')
+    const dir = process.cwd()
     const octokit = initOctokit(token)
     console.log('the __dirname ', __dirname)
     const actionDir = __dirname.replace('/dist', '').replace('/src', '')
     const projectDir = path.relative(actionDir, dir)
 
     console.info('Projectdir: ', projectDir)
-    console.info('token: ', token)
+    // console.info('token: ', token)
     console.info('chromepath: ', chromePath)
 
     core.startGroup('Searching package.json...')
@@ -61,7 +62,9 @@ export default (async () => {
       core.startGroup('Creating local server...')
 
       console.info('starting static server')
-      await startStaticPMServer(projectDir)
+      // await startStaticPMServer(projectDir)
+      console.log(projectDir)
+      await startServer(projectDir)
 
       const sitemap = await getAllPages(true, chromePath)
       core.endGroup()

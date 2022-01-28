@@ -1,4 +1,7 @@
 import pm2 from 'pm2'
+import fs from 'fs'
+import http from 'http'
+import nodestatic from 'node-static'
 
 export default (() => {
   const startPMServer = async (buildCMD: string, startCMD: string) => {
@@ -91,9 +94,31 @@ export default (() => {
     })
   }
 
+  // let file = new StaticServer(__dirname)
+  let server: http.Server
+
+  const startServer = (dirname: string, port = 3000) => {
+    return new Promise<void>((resolve, reject) => {
+      const file = new nodestatic.Server(dirname)
+      server = http
+        .createServer(function (req, res) {
+          file.serve(req, res)
+        })
+        .listen(port)
+      resolve()
+    })
+  }
+
+  const stopServer = () => {
+    console.log('Server is stopping')
+    server.close()
+  }
+
   return {
     startPMServer,
     startStaticPMServer,
     stopPMServer,
+    startServer,
+    stopServer,
   }
 })()

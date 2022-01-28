@@ -6,6 +6,9 @@ import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
 import { findNPMCommands, findPackageJson } from './utils'
+const {
+  promises: { readdir },
+} = require('fs')
 
 export default (async () => {
   const { startPMServer, startStaticPMServer, stopPMServer } = server
@@ -14,10 +17,16 @@ export default (async () => {
   const { initOctokit, createCommit } = octokit
   try {
     await exec('npm install pm2 -g')
+    await exec('sudo pm2 update')
     await exec('pm2 install typescript')
     await exec('sudo apt install ffmpeg')
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
+
+    const getDirectories = async (source: any) =>
+      (await readdir(source, { withFileTypes: true }))
+        .filter((dirent: any) => dirent.isDirectory())
+        .map((dirent: any) => dirent.name)
 
     const chromePath = stdout.trim()
     const token = core.getInput('token')
@@ -25,6 +34,8 @@ export default (async () => {
     const octokit = initOctokit(token)
 
     const projectDir = dir
+
+    console.log(await getDirectories(projectDir))
 
     console.info('Projectdir: ', projectDir)
     console.info('token: ', token)
@@ -34,6 +45,7 @@ export default (async () => {
     const hasPackageJson = findPackageJson(projectDir)
     core.endGroup()
 
+    await exec('ls')
     if (hasPackageJson) {
       startTimer()
       core.startGroup('Starting local server...')

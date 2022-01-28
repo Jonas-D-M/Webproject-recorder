@@ -26,8 +26,8 @@ export default (async () => {
     const dir = core.getInput('project-dir')
     const octokit = initOctokit(token)
     console.log('the __dirname ', __dirname)
-
-    const projectDir = path.relative(__dirname, dir)
+    const actionDir = __dirname.replace('/dist', '').replace('/src', '')
+    const projectDir = path.relative(actionDir, dir)
 
     console.info('Projectdir: ', projectDir)
     console.info('token: ', token)

@@ -23,9 +23,7 @@ export default (async () => {
     const { stdout } = await exec('which google-chrome-stable')
 
     const chromePath = stdout.trim()
-    const token = core.getInput('token')
     const dir = process.cwd()
-    const octokit = initOctokit(token)
     console.log('the __dirname ', __dirname)
     const actionDir = __dirname.replace('/dist', '').replace('/src', '')
     const projectDir = path.relative(actionDir, dir)
@@ -78,7 +76,16 @@ export default (async () => {
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    await createCommit(octokit)
+    // await createCommit(octokit)
+    await exec("git config --global user.name 'Workflow-Builder'")
+    await exec(
+      "git config --global user.email 'your-username@users.noreply.github.com'",
+    )
+    await exec('git add .')
+    await exec(
+      "git commit -am 'Generated showcase video' || echo 'No changes to commit'",
+    )
+    await exec('git push')
 
     process.exit(0)
   } catch (error: any) {

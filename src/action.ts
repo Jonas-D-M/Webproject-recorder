@@ -68,7 +68,6 @@ export default (async () => {
       core.endGroup()
     }
     console.info('stopping server')
-    await stopPMServer()
     core.endGroup()
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
@@ -87,7 +86,6 @@ export default (async () => {
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)
-    await stopPMServer()
     core.setFailed(error)
     process.exit(1)
   }

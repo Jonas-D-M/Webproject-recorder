@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/action.js -m -o dist --license licenses.txt && ncc build lib/pre.js -m -o dist/pre --license licenses.txt",
+    "build": "tsc && ncc build lib/action.js -o dist --license licenses.txt && ncc build lib/pre.js -m -o dist/pre --license licenses.txt",
     "build:dev": "tsc && ncc build lib/action.js -d -o dist --license licenses.txt && ncc build lib/pre.js -o dist/pre --license licenses.txt",
     "dev": "npx nodemon --watch 'src/*' --exec 'ts-node' src/action.ts",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import path from 'path/posix'
 import { promisify } from 'util'
-import octokit from './octokit'
 const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
@@ -9,11 +8,9 @@ import timer from './timer'
 import { findNPMCommands, findPackageJson } from './utils'
 
 export default (async () => {
-  const { startPMServer, startStaticPMServer, startServer, stopPMServer } =
-    server
+  const { startPMServer, startServer, stopPMServer } = server
   const { recordLocalServer, getAllPages } = puppeteer
   const { startTimer, stopTimer, getDuration } = timer
-  const { initOctokit, createCommit } = octokit
   try {
     // await exec('npm install pm2 -g')
     // await exec('sudo pm2 update')

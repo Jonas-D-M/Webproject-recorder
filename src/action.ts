@@ -25,6 +25,7 @@ export default (async () => {
     const token = core.getInput('token')
     const dir = core.getInput('project-dir')
     const octokit = initOctokit(token)
+    console.log('the cwd: ', process.cwd())
 
     const projectDir = path.relative(process.cwd(), dir)
 

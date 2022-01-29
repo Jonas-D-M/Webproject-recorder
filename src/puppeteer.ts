@@ -302,6 +302,24 @@ export default (() => {
     })
   }
 
+  const screenshotComponent = async (
+    page: Page,
+    url: string,
+    cssSelector: string,
+    name: string,
+  ) => {
+    await page.goto(url)
+
+    // ensure the component is loaded
+    await page.waitForSelector(cssSelector)
+
+    const component = await page.$(cssSelector)
+    await component?.screenshot({
+      path: `gen-images/${name}.png`,
+    })
+    await page.close()
+  }
+
   return { recordLocalServer, getAllPages }
 })()
 

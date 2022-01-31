@@ -1,6 +1,6 @@
 name: Project build
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -10,10 +10,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Clean up build directories
+        run: |
+          rm -rfv lib/
+          rm -rfv dist/
       - name: build the action
         run: |
           npm install
           npm run build
+      - name: Update version number
+        run: npm version major
 
       - name: Commit and push build
         run: |
@@ -23,12 +29,11 @@ jobs:
           git commit -am "Generated new build" || echo "No changes to commit"
           git push
 
-      - name: Update version number
-        run: npm version major
-
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
+        with:
+          path: package.json
 
       - name: Create Release
         id: create_release
@@ -38,17 +43,5 @@ jobs:
         with:
           tag_name: v${{ steps.package-version.outputs.current-version}}
           release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: false
-
-      - name: Commit and push build
-        run: |
-          git config --global user.name 'Workflow-Builder'
-          git config --global user.email 'your-username@users.noreply.github.com'
-          git add .
-          git commit -am "Update package.json version" || echo "No changes to commit"
-          git push
+          draft: true
+          prerelease: true

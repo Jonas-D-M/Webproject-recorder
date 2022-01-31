@@ -32,5 +32,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           project-dir: ./static
 
+      - name: Restore git
+        run: |
+          git restore .
+
       - name: update version number
         run: npm version minor

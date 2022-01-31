@@ -1,88 +1,59 @@
 import * as core from '@actions/core'
 import path from 'path/posix'
-import { promisify } from 'util'
-const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
-import { findNPMCommands, findPackageJson } from './utils'
+import {
+  createShowcaseDirectories,
+  findComponentsJson,
+  findPackageJson,
+  getChromePath,
+  installDependencies,
+  pushChanges,
+} from './utils'
 
 export default (async () => {
-  const { startPMServer, startServer, stopPMServer } = server
-  const { recordLocalServer, getAllPages } = puppeteer
+  const { screenshotComponents, addScreenshotsToReadme, createRecording } =
+    puppeteer
+  const { startServer, stopServer } = server
+
   const { startTimer, stopTimer, getDuration } = timer
   try {
-    // await exec('npm install pm2 -g')
-    // await exec('sudo pm2 update')
-    // await exec('pm2 install typescript')
-    await exec('sudo apt-get install ffmpeg')
+    await installDependencies()
+
     // get chrome path
-    const { stdout } = await exec('which google-chrome-stable')
-
-    const chromePath = stdout.trim()
-    const dir = process.cwd()
-    console.log('the __dirname ', __dirname)
-    const actionDir = __dirname.replace('/dist', '').replace('/src', '')
-    const projectDir = path.relative(actionDir, dir)
-
-    console.info('Projectdir: ', projectDir)
-    // console.info('token: ', token)
-    console.info('chromepath: ', chromePath)
+    const chromePath = await getChromePath()
+    const projectDir = path.relative(
+      __dirname.replace('/dist', '').replace('/src', ''),
+      process.cwd(),
+    )
+    // const projectDir = __dirname.replace('/src', '/test')
 
     core.startGroup('Searching package.json...')
-    const hasPackageJson = findPackageJson(projectDir)
+    const isStatic = !findPackageJson(projectDir)
+    const wantsScreenshots = findComponentsJson(projectDir)
     core.endGroup()
 
-    if (hasPackageJson) {
-      startTimer()
-      core.startGroup('Starting local server...')
-      const { buildCMD, startCMD } = findNPMCommands(
-        `${projectDir}/package.json`,
-      )
-      console.info('running commands')
-      await startPMServer(buildCMD, startCMD)
+    console.log({ isStatic, wantsScreenshots })
 
-      core.endGroup()
+    await startServer(isStatic, projectDir)
+    await createShowcaseDirectories(projectDir)
+    startTimer()
 
-      console.info('starting server')
-      const sitemap = await getAllPages(false, chromePath)
-      console.log(sitemap)
+    await createRecording(isStatic, chromePath)
 
-      core.startGroup('Creating recording...')
-      await recordLocalServer(chromePath, sitemap, false)
-      core.endGroup()
-    } else {
-      startTimer()
-      core.notice('No package.json found, handling it as a regular HTML site')
-      core.startGroup('Creating local server...')
-
-      console.info('starting static server')
-      // await startStaticPMServer(projectDir)
-      console.log(projectDir)
-      await startServer(process.cwd())
-
-      const sitemap = await getAllPages(true, chromePath)
-      core.endGroup()
-      core.startGroup('Creating recording...')
-      await recordLocalServer(chromePath, sitemap, true)
-      core.endGroup()
+    if (wantsScreenshots) {
+      await screenshotComponents(chromePath, isStatic, projectDir)
+      await addScreenshotsToReadme(projectDir)
     }
-    console.info('stopping server')
-    core.endGroup()
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    // await createCommit(octokit)
-    await exec("git config --global user.name 'Workflow-Builder'")
-    await exec(
-      "git config --global user.email 'your-username@users.noreply.github.com'",
-    )
-    await exec('git add .')
-    await exec(
-      "git commit -am 'Generated showcase video' || echo 'No changes to commit'",
-    )
-    await exec('git push')
+    core.startGroup('Push changes to repo')
+    await pushChanges()
+    core.endGroup()
 
+    await stopServer(isStatic)
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)

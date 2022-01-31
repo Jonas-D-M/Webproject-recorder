@@ -2,6 +2,7 @@ import pm2 from 'pm2'
 import fs from 'fs'
 import http from 'http'
 import nodestatic from 'node-static'
+import { findNPMCommands } from './utils'
 
 export default (() => {
   const startPMServer = async (buildCMD: string, startCMD: string) => {
@@ -97,7 +98,7 @@ export default (() => {
   // let file = new StaticServer(__dirname)
   let server: http.Server
 
-  const startServer = (dirname: string, port = 3000) => {
+  const startStaticServer = (dirname: string, port = 3000) => {
     return new Promise<void>((resolve, reject) => {
       const file = new nodestatic.Server(dirname)
       server = http
@@ -109,15 +110,33 @@ export default (() => {
     })
   }
 
-  const stopServer = () => {
+  const stopStaticServer = () => {
     console.log('Server is stopping')
     server.close()
   }
 
+  const startServer = async (isStatic: boolean, projectDir: string) => {
+    console.info('Server is starting')
+
+    if (isStatic) {
+      await startStaticServer(projectDir)
+    } else {
+      const { buildCMD, startCMD } = findNPMCommands(
+        `${projectDir}/package.json`,
+      )
+      await startPMServer(buildCMD, startCMD)
+    }
+  }
+
+  const stopServer = async (isStatic: boolean) => {
+    if (isStatic) {
+      stopStaticServer()
+    } else {
+      await stopPMServer()
+    }
+  }
+
   return {
-    startPMServer,
-    startStaticPMServer,
-    stopPMServer,
     startServer,
     stopServer,
   }

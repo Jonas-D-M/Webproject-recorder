@@ -1,10 +1,15 @@
-import puppeteer, { Browser, Page, Puppeteer } from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer'
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'
-import { retry } from './utils'
+import * as core from '@actions/core'
+import * as glob from '@actions/glob'
+import * as io from '@actions/io'
 import { Cluster } from 'puppeteer-cluster'
+import IComponent from './types/Component'
+import { findNPMCommands, retry } from './utils'
+import readme from './readme'
 
 const minimalArgs = [
   '--autoplay-policy=user-gesture-required',
@@ -191,7 +196,7 @@ export default (() => {
   }
 
   const generateShowcaseVideo = (vidName?: string) => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       try {
         const videoName = vidName ?? 'showcase-video.mp4'
 
@@ -199,9 +204,9 @@ export default (() => {
 
         const tmpDirPath = path.join(process.cwd(), 'tmpvid')
         const finalDirPath = path.join(process.cwd(), 'video')
-        const showcaseVidPath = `${process.cwd()}/video/${videoName}`
+        const showcaseVidPath = `${process.cwd()}/showcase/video/${videoName}`
 
-        fs.promises.mkdir(path.dirname(showcaseVidPath), { recursive: true })
+        await io.mkdirP(path.dirname(showcaseVidPath))
 
         const tmpVideos = fs
           .readdirSync(tmpDirPath)
@@ -302,7 +307,146 @@ export default (() => {
     })
   }
 
-  return { recordLocalServer, getAllPages }
+  const screenshotComponents = async (
+    executablePath: string,
+    isStatic: boolean,
+    projectDir: string,
+  ) => {
+    core.startGroup('Screenshot components')
+    const browserconfig = browserConfig
+    browserconfig.executablePath = executablePath
+    const cluster = await Cluster.launch({
+      concurrency: Cluster.CONCURRENCY_BROWSER,
+      maxConcurrency: 3,
+      puppeteerOptions: browserconfig,
+    })
+
+    const components: Array<IComponent> = require(`${projectDir}/components.json`)
+
+    try {
+      await cluster.task(
+        async ({ page, data: { url, cssSelector, name, dir }, worker }) => {
+          console.log('cluster task data: ', { url, cssSelector, name, dir })
+
+          await screenshotComponent(page, url, cssSelector, name, dir)
+        },
+      )
+
+      cluster.on('taskerror', (err, data, willRetry) => {
+        if (willRetry) {
+          console.warn(
+            `Encountered an error while crawling ${data}. ${err.message}\nThis job will be retried`,
+          )
+        } else {
+          console.error(`Failed to crawl ${data}: ${err.message}`)
+        }
+      })
+
+      components.forEach(({ name, page, selector }) => {
+        cluster.queue({
+          url: `http://127.0.0.1:3000/${page}${isStatic ? '.html' : ''}`,
+          cssSelector: selector,
+          name,
+          dir: projectDir,
+        })
+      })
+      core.endGroup()
+    } catch (error) {
+      throw error
+    } finally {
+      await cluster.idle()
+      await cluster.close()
+    }
+  }
+
+  const screenshotComponent = async (
+    page: Page,
+    url: string,
+    cssSelector: string,
+    name: string,
+    projectDir: string,
+  ) => {
+    await page.goto(url)
+    // ensure the component is loaded
+    await page.waitForSelector(cssSelector)
+    const component = await page.$(cssSelector)
+    await component?.screenshot({
+      path: `${projectDir}/showcase/screenshots/${name}.png`,
+    })
+    await page.close()
+  }
+
+  const createRecording = async (isStatic: boolean, chromePath: string) => {
+    if (!isStatic) {
+      const sitemap = await getAllPages(false, chromePath)
+
+      await recordLocalServer(chromePath, sitemap, false)
+    } else {
+      core.notice('No package.json found, handling it as a regular HTML site')
+
+      core.startGroup('Creating local server...')
+      const sitemap = await getAllPages(true, chromePath)
+      core.endGroup()
+
+      core.startGroup('Creating recording...')
+      await recordLocalServer(chromePath, sitemap, true)
+      core.endGroup()
+    }
+  }
+
+  const addScreenshotsToReadme = (
+    projectDir: string,
+    readmeName = 'README.md',
+  ) => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const assetDir = 'showcase/screenshots/'
+        const showcaseScreenshotDir = `${projectDir}/${assetDir}`
+
+        const sectionTitle = '# Components'
+
+        // read the screenshots
+        let readmeString = `${sectionTitle}`
+
+        const patterns = [`${showcaseScreenshotDir}*.png`]
+
+        const globber = await glob.create(patterns.join('\n'))
+
+        const files: Array<string> = (await globber.glob()).map((f: string) => {
+          return path.relative(projectDir, f)
+        })
+
+        files.forEach(filePath => {
+          const filename = filePath.replace(assetDir, '').replace('.png', '')
+          return (readmeString += `\n## ${filename}\n<p>\n\t<img src="${filename}"/>\n</p>\n`)
+        })
+
+        console.log(readmeString)
+
+        const content = await readme.getReadme(projectDir, readmeName)
+
+        const replacedContents = readme.replaceSection({
+          section: 'components',
+          oldContents: content,
+          newContents: readmeString,
+        })
+
+        fs.writeFileSync(`${projectDir}/${readmeName}`, replacedContents, {
+          encoding: 'utf-8',
+          flag: 'w',
+        })
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  return {
+    screenshotComponents,
+    createRecording,
+    addScreenshotsToReadme,
+  }
 })()
 
 const smoothAutoScrollV2 = async (page: Page) => {

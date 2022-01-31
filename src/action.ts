@@ -23,10 +23,8 @@ export default (async () => {
 
     // get chrome path
     const chromePath = await getChromePath()
-    const projectDir = path.relative(
-      __dirname.replace('/dist', '').replace('/src', ''),
-      process.cwd(),
-    )
+    const projectDir = process.cwd()
+
     // const projectDir = __dirname.replace('/src', '/test')
 
     core.startGroup('Searching package.json...')

@@ -418,7 +418,7 @@ export default (() => {
 
         files.forEach(filePath => {
           const filename = filePath.replace(assetDir, '').replace('.png', '')
-          return (readmeString += `\n## ${filename}\n<p>\n\t<img src="${filename}.png"/>\n</p>\n`)
+          return (readmeString += `\n## ${filename}\n<p>\n\t<img src="${filePath}"/>\n</p>\n`)
         })
 
         console.log(readmeString)

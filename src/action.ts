@@ -7,84 +7,51 @@ import server from './server'
 import timer from './timer'
 import {
   findComponentsJson,
-  findNPMCommands,
   findPackageJson,
+  getChromePath,
+  installDependencies,
   pushChanges,
 } from './utils'
 
 export default (async () => {
-  const { startPMServer, startServer, stopPMServer } = server
-  const { recordLocalServer, getAllPages, screenshotComponents } = puppeteer
+  const { screenshotComponents } = puppeteer
+  const { startServer, stopServer } = server
   const { startTimer, stopTimer, getDuration } = timer
   try {
-    // await exec('sudo apt-get install ffmpeg')
+    // await installDependencies()
 
     // get chrome path
-    const { stdout } = await exec('which google-chrome-stable')
-
-    const chromePath = stdout.trim()
-    const dir = process.cwd()
-    console.log('the __dirname ', __dirname)
-    const actionDir = __dirname.replace('/dist', '').replace('/src', '')
-    const projectDir = path.relative(actionDir, dir)
-
-    console.info('Projectdir: ', projectDir)
-    // console.info('token: ', token)
-    console.info('chromepath: ', chromePath)
+    const chromePath = await getChromePath()
+    // const projectDir = path.relative(
+    //   __dirname.replace('/dist', '').replace('/src', ''),
+    //   process.cwd(),
+    // )
+    const projectDir = 'test'
 
     core.startGroup('Searching package.json...')
-    const hasPackageJson = findPackageJson(projectDir)
+    const isStatic = !findPackageJson(projectDir)
     const wantsScreenshots = findComponentsJson(projectDir)
     core.endGroup()
 
-    if (hasPackageJson) {
-      startTimer()
-      core.startGroup('Starting local server...')
-      const { buildCMD, startCMD } = findNPMCommands(
-        `${projectDir}/package.json`,
-      )
-      console.info('running commands')
-      await startPMServer(buildCMD, startCMD)
+    console.log({ isStatic, wantsScreenshots })
 
-      core.endGroup()
+    await startServer(isStatic, projectDir)
 
-      console.info('starting server')
-      const sitemap = await getAllPages(false, chromePath)
-      console.log(sitemap)
+    startTimer()
 
-      core.startGroup('Creating recording...')
-      await recordLocalServer(chromePath, sitemap, false)
-      core.endGroup()
-    } else {
-      startTimer()
-      core.notice('No package.json found, handling it as a regular HTML site')
-      core.startGroup('Creating local server...')
+    // await createRecording(isStatic, projectDir, chromePath)
 
-      console.info('starting static server')
-      // await startStaticPMServer(projectDir)
-      console.log(projectDir)
-      await startServer(process.cwd())
-
-      const sitemap = await getAllPages(true, chromePath)
-      core.endGroup()
-      core.startGroup('Creating recording...')
-      await recordLocalServer(chromePath, sitemap, true)
-      core.endGroup()
+    if (wantsScreenshots) {
+      await screenshotComponents(chromePath, isStatic)
     }
-    console.info('stopping server')
-    core.endGroup()
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    if (wantsScreenshots) {
-      core.startGroup('Screenshot components')
-      await screenshotComponents(chromePath, hasPackageJson)
-      core.endGroup()
-    }
-    core.startGroup('Push changes to repo')
-    await pushChanges()
-    core.endGroup()
+    // core.startGroup('Push changes to repo')
+    // await pushChanges()
+    // core.endGroup()
 
+    await stopServer(isStatic)
     process.exit(0)
   } catch (error: any) {
     console.log('threw an error: ', error)

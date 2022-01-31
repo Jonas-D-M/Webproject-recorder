@@ -3,9 +3,11 @@ import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'
-import { retry } from './utils'
+import { findNPMCommands, retry } from './utils'
 import { Cluster } from 'puppeteer-cluster'
 import IComponent from './types/Component'
+import * as core from '@actions/core'
+import server from './server'
 
 const minimalArgs = [
   '--autoplay-policy=user-gesture-required',
@@ -305,8 +307,9 @@ export default (() => {
 
   const screenshotComponents = async (
     executablePath: string,
-    hasPackageJson: boolean,
+    isStatic: boolean,
   ) => {
+    core.startGroup('Screenshot components')
     const browserconfig = browserConfig
     browserconfig.executablePath = executablePath
     const cluster = await Cluster.launch({
@@ -320,6 +323,8 @@ export default (() => {
     try {
       await cluster.task(
         async ({ page, data: { url, cssSelector, name }, worker }) => {
+          console.log('cluster task data: ', { url, cssSelector, name })
+
           await screenshotComponent(page, url, cssSelector, name)
         },
       )
@@ -336,11 +341,12 @@ export default (() => {
 
       components.forEach(({ name, page, selector }) => {
         cluster.queue({
-          url: `http://127.0.0.1:3000/${page}${hasPackageJson ? '.html' : ''}`,
+          url: `http://127.0.0.1:3000/${page}${isStatic ? '.html' : ''}`,
           cssSelector: selector,
           name,
         })
       })
+      core.endGroup()
     } catch (error) {
       throw error
     } finally {
@@ -365,7 +371,28 @@ export default (() => {
     await page.close()
   }
 
-  return { recordLocalServer, getAllPages, screenshotComponents }
+  const createRecording = async (isStatic: boolean, chromePath: string) => {
+    if (!isStatic) {
+      const sitemap = await getAllPages(false, chromePath)
+
+      await recordLocalServer(chromePath, sitemap, false)
+    } else {
+      core.notice('No package.json found, handling it as a regular HTML site')
+
+      core.startGroup('Creating local server...')
+      const sitemap = await getAllPages(true, chromePath)
+      core.endGroup()
+
+      core.startGroup('Creating recording...')
+      await recordLocalServer(chromePath, sitemap, true)
+      core.endGroup()
+    }
+  }
+
+  return {
+    screenshotComponents,
+    createRecording,
+  }
 })()
 
 const smoothAutoScrollV2 = async (page: Page) => {

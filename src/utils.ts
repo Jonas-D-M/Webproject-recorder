@@ -99,3 +99,15 @@ export const pushChanges = async () => {
   )
   await exec('git push')
 }
+
+export const installDependencies = async () => {
+  // await exec('npm install pm2 -g')
+  // await exec('sudo pm2 update')
+  // await exec('pm2 install typescript')
+  await exec('sudo apt-get install ffmpeg')
+}
+
+export const getChromePath = async () => {
+  const { stdout } = await exec('which google-chrome-stable')
+  return stdout.trim()
+}

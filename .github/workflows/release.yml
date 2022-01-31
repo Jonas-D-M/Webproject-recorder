@@ -16,7 +16,7 @@ jobs:
           rm -rfv dist/
       - name: build the action
         run: |
-          npm install
+          npm ci
           npm run build
 
       - name: Commit and push build

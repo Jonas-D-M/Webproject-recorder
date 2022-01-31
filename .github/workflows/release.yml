@@ -10,10 +10,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Clean up build directories
-        run: |
-          rm -rfv lib/
-          rm -rfv dist/
+      # - name: Clean up build directories
+      #   run: |
+      #     rm -rfv lib/
+      #     rm -rfv dist/
       - name: build the action
         run: |
           npm ci

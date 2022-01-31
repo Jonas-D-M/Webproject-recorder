@@ -108,9 +108,15 @@ export const installDependencies = async () => {
   await exec('sudo apt-get install ffmpeg')
 }
 
-export const getChromePath = async () => {
-  const { stdout } = await exec('which google-chrome-stable')
-  return stdout.trim()
+export const getChromePath = () => {
+  return new Promise<string>(async (resolve, reject) => {
+    try {
+      const { stdout } = await exec('which google-chrome-stable')
+      resolve(stdout.trim())
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
 export const createShowcaseDirectories = (projectDir: string) => {

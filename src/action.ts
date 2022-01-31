@@ -1,7 +1,5 @@
 import * as core from '@actions/core'
 import path from 'path/posix'
-import { promisify } from 'util'
-const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
@@ -21,15 +19,15 @@ export default (async () => {
 
   const { startTimer, stopTimer, getDuration } = timer
   try {
-    // await installDependencies()
+    await installDependencies()
 
     // get chrome path
     const chromePath = await getChromePath()
-    // const projectDir = path.relative(
-    //   __dirname.replace('/dist', '').replace('/src', ''),
-    //   process.cwd(),
-    // )
-    const projectDir = __dirname.replace('/src', '/test')
+    const projectDir = path.relative(
+      __dirname.replace('/dist', '').replace('/src', ''),
+      process.cwd(),
+    )
+    // const projectDir = __dirname.replace('/src', '/test')
 
     core.startGroup('Searching package.json...')
     const isStatic = !findPackageJson(projectDir)
@@ -42,7 +40,7 @@ export default (async () => {
     await createShowcaseDirectories(projectDir)
     startTimer()
 
-    // await createRecording(isStatic, projectDir, chromePath)
+    await createRecording(isStatic, chromePath)
 
     if (wantsScreenshots) {
       await screenshotComponents(chromePath, isStatic, projectDir)
@@ -51,9 +49,9 @@ export default (async () => {
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    // core.startGroup('Push changes to repo')
-    // await pushChanges()
-    // core.endGroup()
+    core.startGroup('Push changes to repo')
+    await pushChanges()
+    core.endGroup()
 
     await stopServer(isStatic)
     process.exit(0)

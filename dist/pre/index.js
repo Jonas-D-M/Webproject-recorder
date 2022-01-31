@@ -1,1 +1,75 @@
-(()=>{"use strict";var e={81:e=>{e.exports=require("child_process")},837:e=>{e.exports=require("util")}};var r={};function __nccwpck_require__(_){var t=r[_];if(t!==undefined){return t.exports}var a=r[_]={exports:{}};var i=true;try{e[_](a,a.exports,__nccwpck_require__);i=false}finally{if(i)delete r[_]}return a.exports}if(typeof __nccwpck_require__!=="undefined")__nccwpck_require__.ab=__dirname+"/";var _={};(()=>{var e=_;Object.defineProperty(e,"__esModule",{value:true});const r=__nccwpck_require__(837);const t=(0,r.promisify)(__nccwpck_require__(81).exec);e["default"]=(async()=>{await t("npm install pm2 -g");await t("pm2 install typescript");await t("sudo apt install ffmpeg")})()})();module.exports=_})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 81:
+/***/ ((module) => {
+
+module.exports = require("child_process");
+
+/***/ }),
+
+/***/ 837:
+/***/ ((module) => {
+
+module.exports = require("util");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId](module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const util_1 = __nccwpck_require__(837);
+const exec = (0, util_1.promisify)((__nccwpck_require__(81).exec));
+exports["default"] = (async () => {
+    await exec('npm install pm2 -g');
+    await exec('pm2 install typescript');
+    await exec('sudo apt install ffmpeg');
+})();
+//# sourceMappingURL=pre.js.map
+})();
+
+module.exports = __webpack_exports__;
+/******/ })()
+;

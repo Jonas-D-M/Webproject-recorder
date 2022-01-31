@@ -22,7 +22,8 @@ jobs:
         run: |
           npm ci
           npm run build
-
+      - name: Update version number
+        run: npm version major
       - name: Commit and push build
         run: |
           git config --global user.name github-actions
@@ -30,9 +31,6 @@ jobs:
           git add .
           git commit -am "Generated new build" || echo "No changes to commit"
           git push
-
-      - name: Update version number
-        run: npm version major
 
       - name: get-npm-version
         id: package-version

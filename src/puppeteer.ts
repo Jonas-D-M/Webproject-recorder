@@ -1,10 +1,11 @@
-import puppeteer, { Browser, Page, Puppeteer } from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer'
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'
 import { retry } from './utils'
 import { Cluster } from 'puppeteer-cluster'
+import IComponent from './types/Component'
 
 const minimalArgs = [
   '--autoplay-policy=user-gesture-required',
@@ -302,6 +303,52 @@ export default (() => {
     })
   }
 
+  const screenshotComponents = async (
+    executablePath: string,
+    hasPackageJson: boolean,
+  ) => {
+    const browserconfig = browserConfig
+    browserconfig.executablePath = executablePath
+    const cluster = await Cluster.launch({
+      concurrency: Cluster.CONCURRENCY_BROWSER,
+      maxConcurrency: 3,
+      puppeteerOptions: browserconfig,
+    })
+
+    const components: Array<IComponent> = require('components.json')
+
+    try {
+      await cluster.task(
+        async ({ page, data: { url, cssSelector, name }, worker }) => {
+          await screenshotComponent(page, url, cssSelector, name)
+        },
+      )
+
+      cluster.on('taskerror', (err, data, willRetry) => {
+        if (willRetry) {
+          console.warn(
+            `Encountered an error while crawling ${data}. ${err.message}\nThis job will be retried`,
+          )
+        } else {
+          console.error(`Failed to crawl ${data}: ${err.message}`)
+        }
+      })
+
+      components.forEach(({ name, page, selector }) => {
+        cluster.queue({
+          url: `http://127.0.0.1:3000/${page}${hasPackageJson ? '.html' : ''}`,
+          cssSelector: selector,
+          name,
+        })
+      })
+    } catch (error) {
+      throw error
+    } finally {
+      await cluster.idle()
+      await cluster.close()
+    }
+  }
+
   const screenshotComponent = async (
     page: Page,
     url: string,
@@ -309,10 +356,8 @@ export default (() => {
     name: string,
   ) => {
     await page.goto(url)
-
     // ensure the component is loaded
     await page.waitForSelector(cssSelector)
-
     const component = await page.$(cssSelector)
     await component?.screenshot({
       path: `gen-images/${name}.png`,
@@ -320,7 +365,7 @@ export default (() => {
     await page.close()
   }
 
-  return { recordLocalServer, getAllPages }
+  return { recordLocalServer, getAllPages, screenshotComponents }
 })()
 
 const smoothAutoScrollV2 = async (page: Page) => {

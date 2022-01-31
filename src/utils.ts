@@ -1,5 +1,7 @@
 import { join } from 'path'
 import { readdirSync, lstatSync, existsSync, readFileSync } from 'fs'
+import { promisify } from 'util'
+const exec = promisify(require('child_process').exec)
 
 export const searchDirRecursive = (
   startPath: string,
@@ -63,6 +65,15 @@ export const findPackageJson = (path: string) => {
   }
 }
 
+export const findComponentsJson = (path: string) => {
+  try {
+    readFileSync(`${path}/components.json`, { encoding: 'utf-8', flag: 'r' })
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
 export const retry = (fn: any, ms: number) =>
   new Promise(resolve => {
     fn()
@@ -76,3 +87,15 @@ export const retry = (fn: any, ms: number) =>
         }, ms)
       })
   })
+
+export const pushChanges = async () => {
+  await exec("git config --global user.name 'Workflow-Builder'")
+  await exec(
+    "git config --global user.email 'your-username@users.noreply.github.com'",
+  )
+  await exec('git add .')
+  await exec(
+    "git commit -am 'Generated showcase video' || echo 'No changes to commit'",
+  )
+  await exec('git push')
+}

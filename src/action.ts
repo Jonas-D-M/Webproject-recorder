@@ -5,14 +5,20 @@ const exec = promisify(require('child_process').exec)
 import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
-import { findNPMCommands, findPackageJson } from './utils'
+import {
+  findComponentsJson,
+  findNPMCommands,
+  findPackageJson,
+  pushChanges,
+} from './utils'
 
 export default (async () => {
   const { startPMServer, startServer, stopPMServer } = server
-  const { recordLocalServer, getAllPages } = puppeteer
+  const { recordLocalServer, getAllPages, screenshotComponents } = puppeteer
   const { startTimer, stopTimer, getDuration } = timer
   try {
-    await exec('sudo apt-get install ffmpeg')
+    // await exec('sudo apt-get install ffmpeg')
+
     // get chrome path
     const { stdout } = await exec('which google-chrome-stable')
 
@@ -28,6 +34,7 @@ export default (async () => {
 
     core.startGroup('Searching package.json...')
     const hasPackageJson = findPackageJson(projectDir)
+    const wantsScreenshots = findComponentsJson(projectDir)
     core.endGroup()
 
     if (hasPackageJson) {
@@ -69,16 +76,14 @@ export default (async () => {
     stopTimer()
     console.log(`duration: ${getDuration()}s`)
 
-    // await createCommit(octokit)
-    await exec("git config --global user.name 'Workflow-Builder'")
-    await exec(
-      "git config --global user.email 'your-username@users.noreply.github.com'",
-    )
-    await exec('git add .')
-    await exec(
-      "git commit -am 'Generated showcase video' || echo 'No changes to commit'",
-    )
-    await exec('git push')
+    if (wantsScreenshots) {
+      core.startGroup('Screenshot components')
+      await screenshotComponents(chromePath, hasPackageJson)
+      core.endGroup()
+    }
+    core.startGroup('Push changes to repo')
+    await pushChanges()
+    core.endGroup()
 
     process.exit(0)
   } catch (error: any) {

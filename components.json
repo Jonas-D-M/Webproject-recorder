@@ -1,0 +1,12 @@
+[
+  {
+    "name": "tobbedansen-header",
+    "page": "zaterdag",
+    "selector": "body > header + div"
+  },
+  {
+    "name": "content-zaterdag",
+    "page": "zaterdag",
+    "selector": "body > section > div > article > div > div:nth-child(2)"
+  }
+]

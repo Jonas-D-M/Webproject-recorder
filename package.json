@@ -26,24 +26,19 @@
     "@actions/io": "^1.1.1",
     "@vercel/ncc": "^0.33.1",
     "async": "^3.2.3",
-    "dotenv": "^14.1.0",
-    "firebase-admin": "^10.0.1",
     "fluent-ffmpeg": "^2.1.2",
     "node-static": "^0.7.11",
     "pm2": "^5.1.2",
     "puppeteer": "^13.0.1",
     "puppeteer-cluster": "^0.23.0",
-    "puppeteer-screen-recorder": "^2.0.2",
-    "uuid": "^8.3.2"
+    "puppeteer-screen-recorder": "^2.0.2"
   },
   "devDependencies": {
     "@types/async": "^3.2.12",
-    "@types/chromedriver": "^81.0.1",
     "@types/connect": "^3.4.35",
     "@types/fluent-ffmpeg": "^2.1.20",
     "@types/node": "^17.0.8",
     "@types/node-static": "^0.7.7",
-    "@types/selenium-webdriver": "^4.0.16",
     "@types/serve-static": "^1.13.10",
     "ts-node": "^10.4.0"
   }

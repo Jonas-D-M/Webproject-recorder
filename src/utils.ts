@@ -1,6 +1,7 @@
 import { join } from 'path'
 import { readdirSync, lstatSync, existsSync, readFileSync } from 'fs'
 import { promisify } from 'util'
+const io = require('@actions/io')
 const exec = promisify(require('child_process').exec)
 
 export const searchDirRecursive = (
@@ -110,4 +111,12 @@ export const installDependencies = async () => {
 export const getChromePath = async () => {
   const { stdout } = await exec('which google-chrome-stable')
   return stdout.trim()
+}
+
+export const createShowcaseDirectories = (projectDir: string) => {
+  return new Promise<void>(async resolve => {
+    await io.mkdirP(`${projectDir}/showcase/video`)
+    await io.mkdirP(`${projectDir}/showcase/screenshots`)
+    resolve()
+  })
 }

@@ -6,6 +6,7 @@ import puppeteer from './puppeteer'
 import server from './server'
 import timer from './timer'
 import {
+  createShowcaseDirectories,
   findComponentsJson,
   findPackageJson,
   getChromePath,
@@ -14,8 +15,10 @@ import {
 } from './utils'
 
 export default (async () => {
-  const { screenshotComponents } = puppeteer
+  const { screenshotComponents, addScreenshotsToReadme, createRecording } =
+    puppeteer
   const { startServer, stopServer } = server
+
   const { startTimer, stopTimer, getDuration } = timer
   try {
     // await installDependencies()
@@ -26,7 +29,7 @@ export default (async () => {
     //   __dirname.replace('/dist', '').replace('/src', ''),
     //   process.cwd(),
     // )
-    const projectDir = 'test'
+    const projectDir = __dirname.replace('/src', '/test')
 
     core.startGroup('Searching package.json...')
     const isStatic = !findPackageJson(projectDir)
@@ -36,13 +39,14 @@ export default (async () => {
     console.log({ isStatic, wantsScreenshots })
 
     await startServer(isStatic, projectDir)
-
+    await createShowcaseDirectories(projectDir)
     startTimer()
 
     // await createRecording(isStatic, projectDir, chromePath)
 
     if (wantsScreenshots) {
-      await screenshotComponents(chromePath, isStatic)
+      await screenshotComponents(chromePath, isStatic, projectDir)
+      await addScreenshotsToReadme(projectDir)
     }
     stopTimer()
     console.log(`duration: ${getDuration()}s`)

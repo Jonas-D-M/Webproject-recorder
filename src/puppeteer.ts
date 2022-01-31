@@ -3,11 +3,13 @@ import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder'
 import fluent_ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 import fs from 'fs'
-import { findNPMCommands, retry } from './utils'
+import * as core from '@actions/core'
+import * as glob from '@actions/glob'
+import * as io from '@actions/io'
 import { Cluster } from 'puppeteer-cluster'
 import IComponent from './types/Component'
-import * as core from '@actions/core'
-import server from './server'
+import { findNPMCommands, retry } from './utils'
+import readme from './readme'
 
 const minimalArgs = [
   '--autoplay-policy=user-gesture-required',
@@ -194,7 +196,7 @@ export default (() => {
   }
 
   const generateShowcaseVideo = (vidName?: string) => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       try {
         const videoName = vidName ?? 'showcase-video.mp4'
 
@@ -202,9 +204,9 @@ export default (() => {
 
         const tmpDirPath = path.join(process.cwd(), 'tmpvid')
         const finalDirPath = path.join(process.cwd(), 'video')
-        const showcaseVidPath = `${process.cwd()}/video/${videoName}`
+        const showcaseVidPath = `${process.cwd()}/showcase/video/${videoName}`
 
-        fs.promises.mkdir(path.dirname(showcaseVidPath), { recursive: true })
+        await io.mkdirP(path.dirname(showcaseVidPath))
 
         const tmpVideos = fs
           .readdirSync(tmpDirPath)
@@ -308,6 +310,7 @@ export default (() => {
   const screenshotComponents = async (
     executablePath: string,
     isStatic: boolean,
+    projectDir: string,
   ) => {
     core.startGroup('Screenshot components')
     const browserconfig = browserConfig
@@ -318,14 +321,14 @@ export default (() => {
       puppeteerOptions: browserconfig,
     })
 
-    const components: Array<IComponent> = require('components.json')
+    const components: Array<IComponent> = require(`${projectDir}/components.json`)
 
     try {
       await cluster.task(
-        async ({ page, data: { url, cssSelector, name }, worker }) => {
-          console.log('cluster task data: ', { url, cssSelector, name })
+        async ({ page, data: { url, cssSelector, name, dir }, worker }) => {
+          console.log('cluster task data: ', { url, cssSelector, name, dir })
 
-          await screenshotComponent(page, url, cssSelector, name)
+          await screenshotComponent(page, url, cssSelector, name, dir)
         },
       )
 
@@ -344,6 +347,7 @@ export default (() => {
           url: `http://127.0.0.1:3000/${page}${isStatic ? '.html' : ''}`,
           cssSelector: selector,
           name,
+          dir: projectDir,
         })
       })
       core.endGroup()
@@ -360,13 +364,14 @@ export default (() => {
     url: string,
     cssSelector: string,
     name: string,
+    projectDir: string,
   ) => {
     await page.goto(url)
     // ensure the component is loaded
     await page.waitForSelector(cssSelector)
     const component = await page.$(cssSelector)
     await component?.screenshot({
-      path: `gen-images/${name}.png`,
+      path: `${projectDir}/showcase/screenshots/${name}.png`,
     })
     await page.close()
   }
@@ -389,9 +394,58 @@ export default (() => {
     }
   }
 
+  const addScreenshotsToReadme = (
+    projectDir: string,
+    readmeName = 'README.md',
+  ) => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const assetDir = 'showcase/screenshots/'
+        const showcaseScreenshotDir = `${projectDir}/${assetDir}`
+
+        const sectionTitle = '# Components'
+
+        // read the screenshots
+        let readmeString = `${sectionTitle}`
+
+        const patterns = [`${showcaseScreenshotDir}*.png`]
+
+        const globber = await glob.create(patterns.join('\n'))
+
+        const files: Array<string> = (await globber.glob()).map((f: string) => {
+          return path.relative(projectDir, f)
+        })
+
+        files.forEach(filePath => {
+          const filename = filePath.replace(assetDir, '').replace('.png', '')
+          return (readmeString += `\n## ${filename}\n<p>\n\t<img src="${filename}"/>\n</p>\n`)
+        })
+
+        console.log(readmeString)
+
+        const content = await readme.getReadme(projectDir, readmeName)
+
+        const replacedContents = readme.replaceSection({
+          section: 'components',
+          oldContents: content,
+          newContents: readmeString,
+        })
+
+        fs.writeFileSync(`${projectDir}/${readmeName}`, replacedContents, {
+          encoding: 'utf-8',
+          flag: 'w',
+        })
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   return {
     screenshotComponents,
     createRecording,
+    addScreenshotsToReadme,
   }
 })()
 

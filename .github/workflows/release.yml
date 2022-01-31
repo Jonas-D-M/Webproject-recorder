@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Clean up build directories
+        run: |
+          rm -rfv lib/
+          rm -rfv dist/
       - name: build the action
         run: |
           npm install
@@ -39,9 +43,5 @@ jobs:
         with:
           tag_name: v${{ steps.package-version.outputs.current-version}}
           release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: false
+          draft: true
+          prerelease: true

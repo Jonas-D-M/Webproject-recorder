@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Clean up build directories
         run: |
           rm -rfv lib/
@@ -23,10 +25,9 @@ jobs:
         run: |
           git config --global user.name 'Workflow-Builder'
           git config --global user.email 'your-username@users.noreply.github.com'
-          git pull
           git add .
           git commit -am "Generated new build" || echo "No changes to commit"
-          git push origin HEAD:master
+          git push
 
       - name: Update version number
         run: npm version major

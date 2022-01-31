@@ -26,8 +26,8 @@ jobs:
         run: |
           npm ci
           npm run build
-      - name: Update version number
-        run: npm version major
+      # - name: Update version number
+      #   run: npm version major
       - name: Commit and push build
         run: |
           git add .

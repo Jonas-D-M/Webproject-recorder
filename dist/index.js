@@ -360,6 +360,7 @@ exports["default"] = (() => {
             concurrency: puppeteer_cluster_1.Cluster.CONCURRENCY_BROWSER,
             maxConcurrency: 3,
             puppeteerOptions: browserconfig,
+            timeout: 60000,
         });
         const components = require(`${projectDir}/components.json`);
         try {
@@ -564,16 +565,13 @@ exports["default"] = (() => {
         return new Promise((resolve, reject) => {
             try {
                 const path = `${projectDir}/${filename}`;
-                if (fs_1.default.existsSync(path)) {
-                    resolve(fs_1.default.readFileSync(path, 'utf-8'));
-                }
-                else {
+                if (!fs_1.default.existsSync(path)) {
                     fs_1.default.writeFileSync(path, '', {
                         encoding: 'utf-8',
                         flag: 'w',
                     });
-                    resolve('');
                 }
+                resolve(fs_1.default.readFileSync(path, 'utf-8'));
             }
             catch (error) {
                 reject(error);

@@ -17,6 +17,8 @@ export default (() => {
       try {
         console.info('Starting node server in background')
         process.chdir(dirname)
+        console.info('Installing dependencies first...')
+        await exec('npm ci')
         spawn('npm', ['run', 'start'], {
           stdio: 'ignore', // piping all stdio to /dev/null
           detached: true,

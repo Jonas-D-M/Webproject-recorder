@@ -1,24 +1,43 @@
-[![Project build](https://github.com/Jonas-D-M/Research-Project/actions/workflows/build.yml/badge.svg?branch=feature%2Fconvert-to-javascript-action)](https://github.com/Jonas-D-M/Research-Project/actions/workflows/build.yml)
-# Research Project
-Hoe kan je automatisch een screencapture maken van een portfolio website aan de hand van GitHub Actions?
+# Research Project Action
+This action creates showcase assets inside your repository based on the type of website (static HTML or with the help of framework).
 
-## Deelvragen
-* Welke bestaande testing frameworks laten het toe om geautomatiseerd visueel te testen?
-* Is een Docker container action sneller of trager dan een JavaScript action of een composite action?
+## Features
+- create or append readme with screenshots of components
+- create showcase video of all pages
 
-* Hoe kan een Github vendor lock-in vermeden worden?
-* Hoe kunnen screenshots van bepaalde componenten uit een pagina in een markdownfile geplaatstworden?
-* Hoe definieer ik een geautomatiseerde interactie via een configfile?
-* Hoe kunnen custom flows in geintegreerd worden? Bv. Het klikken van een knop
+## Usage
+### Action workflow
+```
+runs-on: ubuntu-latest
+steps:
+    - name: checkout repo
+        uses: actions/checkout@v2
+    - name: Research Project Action
+        uses: Jonas-D-M/Research-Project@v26.0.0
+```
+### Specifiy components
+Create a `components.json` file inside the root directory of the project with the following structure:
+```
+[
+  {
+    "name": name of the component,
+    "page": name of the page on wich to find the component (no extension),
+    "selector": css selector
+  },
+ ...
+]
 
-* Waar kunnen de gegenereerde video’s opgeslagen worden op een portfoliosite getoond worden?
-* Hoe kunnen bestaande/nieuwe/dynamic routes geintegreerd worden?
-* Hoe kan een gegenereerde video in een mock-up geplaatst worden?
-* Hoe behandel ik websites die zonder framework geschreven zijn?
-* Hoe verlagen we de buildtime van het geautomatiseerd process?
-* Welke bestaande tests van de gebruiker kunnen daardoor vervangen worden?
+```
 
-## Welke bestaande testing frameworks laten het toe om geautomatiseerd visueel te testen?
-* Puppeteer: ontwikkeld door chrome devtools team. Enkel maar voor Chrome.
-* Selenium: Cross-browser
+## How it works
+This action makes use of Puppeteer and its ability to create screenshots in conjunction with a screen recorder plugin for Puppeteer.
+The plugin makes use of the native chrome devtool protocol for capturing video frame by frame. The created assets are stored in a newly created folder: `showcase/`
+If you want to access these assets, you can retrieve them via the Github API.
 
+## Local Development
+
+### `npm run dev`
+Runs the project in development/watch mode. The project will be rebuilt upon changes. For testing purposes, change the projectDir variable inside `action.ts` to a folder with a testable project.
+
+### `npm run build`
+Compiles the typescript code to javascript and uses Vercel ncc to create a single javascript file with all the dependencies.

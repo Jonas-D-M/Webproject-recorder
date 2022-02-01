@@ -319,6 +319,7 @@ export default (() => {
       concurrency: Cluster.CONCURRENCY_BROWSER,
       maxConcurrency: 3,
       puppeteerOptions: browserconfig,
+      timeout: 60000,
     })
 
     const components: Array<IComponent> = require(`${projectDir}/components.json`)

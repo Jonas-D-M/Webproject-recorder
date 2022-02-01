@@ -47,7 +47,6 @@ const minimalArgs = [
   '--password-store=basic',
   '--use-gl=swiftshader',
   '--use-mock-keychain',
-  '--start-maximized',
 ]
 
 const viewport = {
@@ -166,6 +165,7 @@ export default (() => {
       concurrency: Cluster.CONCURRENCY_BROWSER,
       maxConcurrency: 3,
       puppeteerOptions: browserconfig,
+      timeout: 60000,
     })
     try {
       let index = 1
@@ -244,7 +244,7 @@ export default (() => {
     const resolution = { width: 1920, height: 1080 }
     await initViewport(page, resolution)
     // await retry(() => page.goto(url, { waitUntil: 'load' }), 1000)
-    await page.goto(url, { waitUntil: 'load' })
+    await page.goto(url, { waitUntil: 'networkidle0' })
     const recorder = await initRecorder(page)
     console.log('Starting recorder')
     await recorder.start(`./tmpvid/tmp-${index}.mp4`)
@@ -514,10 +514,10 @@ const smoothAutoScroll = async (page: Page) => {
 
 const autoScroll = async (page: Page) => {
   await page.evaluate(
-    (recorder: PuppeteerScreenRecorder) =>
+    () =>
       new Promise<void>(async (resolve, reject) => {
         try {
-          let totalHeight = 0
+          let totalHeight = -200
           let distance = 100
           let firstTime = true
           const timer = setInterval(() => {

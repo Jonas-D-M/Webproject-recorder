@@ -19,13 +19,15 @@ export default (async () => {
 
   const { startTimer, stopTimer, getDuration } = timer
   try {
-    await installDependencies()
+    // await installDependencies()
 
     // get chrome path
     const chromePath = await getChromePath()
-    const projectDir = process.cwd()
+    // const projectDir = process.cwd()
 
-    // const projectDir = __dirname.replace('/src', '/test')
+    const projectDir = __dirname.replace('/src', '/test2')
+
+    console.log(projectDir)
 
     core.startGroup('Searching package.json...')
     const isStatic = !findPackageJson(projectDir)
@@ -48,7 +50,7 @@ export default (async () => {
     console.log(`duration: ${getDuration()}s`)
 
     core.startGroup('Push changes to repo')
-    await pushChanges()
+    // await pushChanges()
     core.endGroup()
 
     await stopServer(isStatic)

@@ -1,102 +1,40 @@
-import pm2 from 'pm2'
-import fs from 'fs'
 import http from 'http'
 import nodestatic from 'node-static'
 import { findNPMCommands } from './utils'
+import { promisify } from 'util'
+import { spawn, exec as execute } from 'child_process'
+const exec = promisify(execute)
 
 export default (() => {
-  const startPMServer = async (buildCMD: string, startCMD: string) => {
-    const options = {
-      script: `npm -- run start`,
-      name: 'site-server',
-      max_restarts: 0,
-      node_args: '--no-autorestart',
-    }
-
-    return new Promise<void>((resolve, reject) => {
-      try {
-        pm2.connect(function (err) {
-          if (err) {
-            throw err
-          }
-          console.log('connected to pm2')
-          pm2.start(options, (err, apps) => {
-            if (err) {
-              throw err
-            }
-            console.log('started server')
-
-            pm2.disconnect()
-            resolve()
-          })
-        })
-      } catch (error) {
-        console.log('threw an error: ', error)
-        reject()
-      }
-    })
-  }
-
-  const startStaticPMServer = async (projectDir: string) => {
-    const options: pm2.StartOptions = {
-      script: `serve`,
-      name: 'site-server',
-      max_restarts: 0,
-      env: {
-        PM2_SERVE_PATH: `${projectDir}`,
-        // @ts-ignore
-        PM2_SERVE_PORT: 3000,
-        PM2_SERVE_HOMEPAGE: './index.html',
-      },
-    }
-
-    console.info(options)
-
-    return new Promise<void>((resolve, reject) => {
-      try {
-        pm2.connect(function (err) {
-          if (err) {
-            console.log('cant connect to pm2')
-            throw err
-          }
-          console.log('connected to pm2')
-
-          pm2.start(options, (err, apps) => {
-            if (err) {
-              throw err
-            }
-            console.log('started pm2')
-
-            pm2.disconnect()
-            resolve()
-          })
-        })
-      } catch (error) {
-        console.log('threw an error: ', error)
-        reject()
-      }
-    })
-  }
-
-  const stopPMServer = () => {
-    return new Promise<void>((resolve, reject) => {
-      try {
-        pm2.delete('site-server', (err, proc) => {
-          if (err) {
-            console.log(err)
-            process.exit(2)
-          }
-          resolve()
-        })
-      } catch (error) {
-        pm2.disconnect()
-        reject()
-      }
-    })
-  }
-
-  // let file = new StaticServer(__dirname)
   let server: http.Server
+
+  const startNodeServer = (buildCMD: string, startCMD: string) => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        console.info('Starting node server in background')
+        process.chdir('./test2')
+        spawn('npm', ['run', 'start'], {
+          stdio: 'ignore', // piping all stdio to /dev/null
+          detached: true,
+        }).unref()
+        resolve()
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  const stopNodeServer = () => {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        console.info('Stopping node server...')
+        await exec('fuser -k 3000/tcp')
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 
   const startStaticServer = (dirname: string, port = 3000) => {
     return new Promise<void>((resolve, reject) => {
@@ -124,7 +62,7 @@ export default (() => {
       const { buildCMD, startCMD } = findNPMCommands(
         `${projectDir}/package.json`,
       )
-      await startPMServer(buildCMD, startCMD)
+      await startNodeServer(buildCMD, startCMD)
     }
   }
 
@@ -132,7 +70,7 @@ export default (() => {
     if (isStatic) {
       stopStaticServer()
     } else {
-      await stopPMServer()
+      await stopNodeServer()
     }
   }
 

@@ -2,8 +2,9 @@
 This action creates showcase assets inside your repository based on the type of website (static HTML or with the help of framework).
 
 ## Features
-- create or append readme with screenshots of components
-- create showcase video of all pages
+- Create or append readme with screenshots of components
+- Concurrently create videos to save on execution time.
+- Get available pages based on clickable links on home page.
 
 ## Usage
 ### Action workflow

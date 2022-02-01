@@ -14,7 +14,7 @@ steps:
     - name: checkout repo
         uses: actions/checkout@v2
     - name: Research Project Action
-        uses: Jonas-D-M/Research-Project@v26.0.0
+        uses: Jonas-D-M/Research-Project@v1.0.0
 ```
 ### Specifiy components
 Create a `components.json` file inside the root directory of the project with the following structure:

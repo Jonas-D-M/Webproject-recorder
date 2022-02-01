@@ -39,8 +39,9 @@ exports["default"] = (async () => {
     const { startServer, stopServer } = server_1.default;
     const { startTimer, stopTimer, getDuration } = timer_1.default;
     try {
+        await (0, utils_1.installDependencies)();
         const chromePath = await (0, utils_1.getChromePath)();
-        const projectDir = __dirname.replace('/src', '/test2');
+        const projectDir = process.cwd();
         console.log(projectDir);
         core.startGroup('Searching package.json...');
         const isStatic = !(0, utils_1.findPackageJson)(projectDir);
@@ -58,6 +59,7 @@ exports["default"] = (async () => {
         stopTimer();
         console.log(`duration: ${getDuration()}s`);
         core.startGroup('Push changes to repo');
+        await (0, utils_1.pushChanges)();
         core.endGroup();
         await stopServer(isStatic);
         process.exit(0);
@@ -635,7 +637,6 @@ exports["default"] = (() => {
         return new Promise(async (resolve, reject) => {
             try {
                 console.info('Starting node server in background');
-                process.chdir('./test2');
                 (0, child_process_1.spawn)('npm', ['run', 'start'], {
                     stdio: 'ignore',
                     detached: true,

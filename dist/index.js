@@ -633,10 +633,11 @@ const child_process_1 = __nccwpck_require__(2081);
 const exec = (0, util_1.promisify)(child_process_1.exec);
 exports["default"] = (() => {
     let server;
-    const startNodeServer = (buildCMD, startCMD) => {
+    const startNodeServer = (buildCMD, startCMD, dirname) => {
         return new Promise(async (resolve, reject) => {
             try {
                 console.info('Starting node server in background');
+                process.chdir(dirname);
                 (0, child_process_1.spawn)('npm', ['run', 'start'], {
                     stdio: 'ignore',
                     detached: true,
@@ -682,7 +683,7 @@ exports["default"] = (() => {
         }
         else {
             const { buildCMD, startCMD } = (0, utils_1.findNPMCommands)(`${projectDir}/package.json`);
-            await startNodeServer(buildCMD, startCMD);
+            await startNodeServer(buildCMD, startCMD, projectDir);
         }
     };
     const stopServer = async (isStatic) => {

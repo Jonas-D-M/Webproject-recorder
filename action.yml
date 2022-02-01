@@ -3,10 +3,6 @@ description: 'Create videos from webprojects'
 
 author: 'Jonas De Meyer'
 
-branding:
-  icon: "camera",
-  color: "gray-dark"
-
 inputs:
   token:
     description: 'GitHub token'

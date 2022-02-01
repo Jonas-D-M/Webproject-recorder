@@ -12,7 +12,6 @@ export default (() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
         console.info('Starting node server in background')
-        process.chdir('./test2')
         spawn('npm', ['run', 'start'], {
           stdio: 'ignore', // piping all stdio to /dev/null
           detached: true,

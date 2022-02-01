@@ -8,10 +8,15 @@ const exec = promisify(execute)
 export default (() => {
   let server: http.Server
 
-  const startNodeServer = (buildCMD: string, startCMD: string) => {
+  const startNodeServer = (
+    buildCMD: string,
+    startCMD: string,
+    dirname: string,
+  ) => {
     return new Promise<void>(async (resolve, reject) => {
       try {
         console.info('Starting node server in background')
+        process.chdir(dirname)
         spawn('npm', ['run', 'start'], {
           stdio: 'ignore', // piping all stdio to /dev/null
           detached: true,
@@ -61,7 +66,7 @@ export default (() => {
       const { buildCMD, startCMD } = findNPMCommands(
         `${projectDir}/package.json`,
       )
-      await startNodeServer(buildCMD, startCMD)
+      await startNodeServer(buildCMD, startCMD, projectDir)
     }
   }
 

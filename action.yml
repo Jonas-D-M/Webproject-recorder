@@ -1,6 +1,12 @@
 name: 'Research Project Action'
 description: 'Create videos from webprojects'
+
 author: 'Jonas De Meyer'
+
+branding:
+  icon: "camera",
+  color: "gray-dark"
+
 inputs:
   token:
     description: 'GitHub token'
@@ -12,6 +18,3 @@ runs:
   using: 'node16'
   # pre: 'dist/pre/index.js'
   main: 'dist/index.js'
-# branding:
-#   icon: "camera",
-#   color: "gray-dark"

@@ -11,15 +11,13 @@ export default (() => {
     return new Promise<string>((resolve, reject) => {
       try {
         const path = `${projectDir}/${filename}`
-        if (fs.existsSync(path)) {
-          resolve(fs.readFileSync(path, 'utf-8'))
-        } else {
+        if (!fs.existsSync(path)) {
           fs.writeFileSync(path, '', {
             encoding: 'utf-8',
             flag: 'w',
           })
-          resolve('')
         }
+        resolve(fs.readFileSync(path, 'utf-8'))
       } catch (error) {
         reject(error)
       }

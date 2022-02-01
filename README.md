@@ -41,4 +41,4 @@ If you want to access these assets, you can retrieve them via the Github API.
 Runs the project in development/watch mode. The project will be rebuilt upon changes. For testing purposes, change the projectDir variable inside `action.ts` to a folder with a testable project.
 
 ### `npm run build`
-Compiles the typescript code to javascript and uses Vercel ncc to create a single javascript file with all the dependencies.
+Compiles the typescript code to javascript and uses Vercel ncc to create a single javascript file with all the node_modules.

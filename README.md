@@ -1,5 +1,5 @@
 # Research Project Action
-This action creates showcase assets inside your repository based on the type of website (static HTML or with the help of framework).
+This action records a video of your website (static HTML or with the help of a Javascript framework) and puts it in the showcase folder. Ready for you to access it and use it.
 
 ## Features
 - Create or append readme with screenshots of components
